@@ -1,0 +1,46 @@
+# Andmehõive
+
+## 12.09.2026
+
+**Kohal olid: Ats, Serafima, Ivan, Daniil**
+
+1. Kaardistada, mis asju on vaja ja mis iga asi teeb.
+   - Andur - Monolithic silicon absolute pressure sensor - MPX5700AP
+
+   - AtomS3 - Miniature Programmable controller - Built around ESP32-S3
+
+   - Maketeerimisplaat - Korduvkasutatav jootmisvaba alus alektroonikalülituste kiireks kokkupanemiseks ja testimiseks
+
+   - Passiivkomplekt - Takistid, Kondensaatorid, Potentsiomeetrid, dioodid, valgusedioodid
+
+   - Multimeeter - Mõõtmiseks and shit, et asju läbi ei põletaks
+
+   - Ostsilloskoop - Elektrisignaalide reaalajas jälgimiseks, mõõtmiseks ja anaslüüsimiseks
+
+   - 4 mm voolik - Mõeldud siis õhu/rõhu juhtimisele
+
+   - T-liitmik - Õhu liikumiseks, kompressorist ühendub see andurisse ja selleni, mis päriselt tööd teeb
+
+   - vooliku kork - peatada vool ühes voolikus
+   - Iminapp - Täiturseade, mida kasutatakse objektide haaramiseks, tõstmiseks ja liigutamiseks vaakumi abil.
+
+   - Polükarbonaatklaas - Klaas noh
+
+2. Setup ühendus arvuti ja Roboti vahel:
+   - Klooni Repo: https://github.com/KKallas/mg400-base
+   - Setup Python environment (juhend README.md's)
+
+3. Robot käitub kui ELETRILINE Energiaallikas !
+
+4. How to Code this?
+   - Ühenda DATA USB kaabliga arvuti külge.
+   - Ava Thonny -> Run -> Configure Interpreter -> MicroController (ESP32) -> Vali õige MicroController (COM6 meie juhul).
+   - Meil oli ka vaja updateida Microcontrollerit ennast, enne kui saime edukalt koodi seal jooksutada.
+   - Mis on edasised sammud, kuidas saame Andurist infot ja mis selelga täpselt koodis vaja teha ?
+     - Kuidas salvestada see Microcontrolleri peale, et päriselt ka töötaks pärast ja ühendada see olemasoleva ekosüsteemiga.
+   - Vaja panna see kood samasse Giti, et saaks kutsuda API'd
+
+5. Postman to Test API
+   - API on olemas Gitis
+   - Postman:
+     - Text type to JSON; Muidu ei tööta
