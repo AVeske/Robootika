@@ -46,3 +46,31 @@ Tulemus:
 - Captive portal töötab.
 - Olemasolev image-serveri veebileht avaneb captive portali kaudu.
 - Veebilehe testnupp kuvab AtomS3R ekraanil seadme hetkeoleku.
+
+
+### Tähe valimine AtomS3R nupuga
+
+Lisatud eraldi `letter_selector` moodul valitud tähe oleku ja kuvamise jaoks.
+
+Lisatud failid:
+
+- `src/letter_selector.h` — mooduli avalik liides.
+- `src/letter_selector.cpp` — valitud tähe olek, järgmise tähe valimine ja ekraanile kuvamine.
+
+Starter-projektis oli juba olemas nupuvajutuse kestuse mõõtmine ning short-, long- ja double-press eristamine. Seda loogikat ei kirjutatud ümber.
+
+Single short press käitumine muudeti:
+
+`AtomS3R button`
+→ starteri short-press tuvastus
+→ `nextLetter()`
+→ `showSelectedLetter()`
+→ ekraanil kuvatakse järgmine täht.
+
+Tähed liiguvad järjest:
+
+`A → B → C → ... → Z → A`
+
+Long press ja double press jäid selles etapis starter-projekti olemasoleva `runGesture()` loogika kasutada.
+
+Tähe saatmist jaama selles etapis veel ei lisatud.
