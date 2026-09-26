@@ -74,3 +74,17 @@ Tähed liiguvad järjest:
 Long press ja double press jäid selles etapis starter-projekti olemasoleva `runGesture()` loogika kasutada.
 
 Tähe saatmist jaama selles etapis veel ei lisatud.
+
+
+### Tähe saatmine AtomS3R-ist jaama
+
+Lisatud Atomi ja sülearvutis töötava jaama vaheline HTTP-põhine tähekanal.
+
+Jaama testserver töötab Python Flaskiga ning pakub endpointi:
+
+`POST /letter`
+
+Atom saadab pika nupuvajutuse korral hetkel valitud tähe JSON kujul:
+
+```json
+{"letter":"D"}
