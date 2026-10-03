@@ -45,6 +45,7 @@
    - Postman:
      - Text type to JSON; Muidu ei tööta
 
+
 ## 13.09.2026
 
 **Kohal olid: Ats, Serafima, Ivan, Daniil**
@@ -69,3 +70,7 @@ Simulatsioon müraga: [Falstadi skeem](https://www.falstad.com/circuit/circuitjs
 2. Eemaldati vana `orchestrator.py`.
    - `pump_controller.py` saadab nüüd `controller.py` sisu ise AtomS3-le; eraldi `mpremote`-i protsessi ei käivitata.
    - Kasutada tuleb õiget seriali porti ning vältida sama pordi samaaegset avamist teise programmi poolt.
+
+   Anduri, maketeerimisplaadi ja AtomS3 ühenduse foto:
+
+![Rõhuandur ühendatuna maketeerimisplaadi kaudu AtomS3-ga](atom-andur-maketeerimisplaat.jpg)

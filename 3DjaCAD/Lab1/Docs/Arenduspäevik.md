@@ -8,10 +8,18 @@
 - Lahti järgmiseks korraks: Kontrollime prinditud tulemuse.
 
 
-### 2. Pastakahoidik
+### 3. Pastakahoidik
 
 **11.09 - Ats, Daniil, Ivan, serafima**
 Pastaka diameeter (väljast mõõdetud) - 9mm.
 Roboti hoidiku diameeter - 36mm.
 Auk roboti hoidiku sees (auke on neli): 3,5mm.
 Vahe kahe augu vahel: 26,75 (sise äärtel), 30 (augu keskpunktist).
+
+
+**12-13.09**
+Katsetame ja täiendame patakahoidiku prototüübid.
+
+
+**02-03.10**
+Katsetame ja täiendame patakahoidiku prototüübid. Katsed selle kirjutamisega. Eesmärk: pastakas peab püsima kindlalt ja mitte olema liiga lõtv hoidikus.
