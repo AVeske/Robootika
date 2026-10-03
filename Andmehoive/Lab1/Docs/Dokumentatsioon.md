@@ -51,15 +51,14 @@ Toru T-liitmik jagab rõhuühenduse anduri ja iminapa vahel. Nii saab mõõta r�
 ## `scripts_by_hands` failid
 
 - [controller.py](../scripts_by_hands/controller.py) käib Atomil. See loeb GPIO 25 ADC-d, väljastab pinge voltides (`"1.234 V"`) ja ootab iga näidu vahel 100 ms.
-- [pump_controller.py](../scripts_by_hands/pump_controller.py) käib arvutis. See avab COM6, saadab `controller.py` Atomile, loeb pingeread, arvutab absoluutrõhu, kirjutab mõõte `live_logger.py` abil ja juhib pumpa. Lävendid on 98 kPa sisse ja 70 kPa välja; nende vahel hoitakse senist režiimi.
-- [live_logger.py](../scripts_by_hands/live_logger.py) avab käivitamisel `log.csv` faili kirjutamiseks, lisab päise ja pakub `write_log()` funktsiooni. Iga rida kirjutatakse kohe kettale.
+- [pump_controller.py](../scripts_by_hands/pump_controller.py) käib arvutis. See avab praegu COM5 kiirusega 115200, saadab `controller.py` Atomile ja loeb pingeread. Programm arvutab absoluutrõhu, juhib pumpa ning küsib Escape'i või Ctrl-C korral väljumisel pumba väljalülitamist. Lävendid on 98 kPa sisse ja 70 kPa välja; nende vahel hoitakse senist režiimi.
+- [live_logger.py](../scripts_by_hands/live_logger.py) avab käivitamisel `log.csv` faili kirjutamiseks, lisab päise ja pakub `write_log()` funktsiooni. Iga rida kirjutatakse kohe kettale ning sama CSV-rida prinditakse ka konsooli.
 - [compressor_client.py](../scripts_by_hands/compressor_client.py) saadab pumba režiimi samale kohalikule HTTP API aadressile nagu `scripts_ai` klient.
-- [orchestrator.py](../scripts_by_hands/orchestrator.py) käivitab eraldi protsessidena `mpremote`-i kaudu Atomi kontrolleri ja arvuti pumbakontrolleri.
 - [log.csv](../scripts_by_hands/log.csv) sisaldab näidismõõtmisi. Veerud on `time_ms,volts,pressure_kpa,compressor`. Ajatempel on arvuti Unix-aeg millisekundites, rõhk on absoluutne kPa ja pumba veerg näitab logitud režiimi.
 
 ### `scripts_by_hands` variandi erinevus
 
-Siin on kaks võimalikku viisi Atomile koodi käivitamiseks: `pump_controller.py` saadab koodi seriali kaudu, `orchestrator.py` käivitab `mpremote`-i. Neid ei tasu korraga kasutada, sest mõlemad võivad COM6 porti avada ning Atomi seriali juhtida. `pump_controller.py` kasutab lisaks kolmanda osapoole `keyboard` paketti Escape-klahvi lugemiseks.
+Varem olnud `orchestrator.py` eemaldati. Praegu saadab `pump_controller.py` ise kontrolleri sisu Atomile seriali kaudu, seega pole selle töövoo käivitamiseks eraldi `mpremote`-i protsessi vaja. Programm kasutab praegu COM5 porti; kui Atom on teise pordiga ühendatud, tuleb port skriptis muuta. Escape-klahvi lugemiseks kasutab `pump_controller.py` kolmanda osapoole `keyboard` paketti.
 
 ## Andmete liikumine ja rõhu loogika
 
@@ -77,7 +76,7 @@ Koodis olevad lävendid on esialgsed väärtused, mitte veel tehase targa kasti 
 - MPX5700AP võib väljastada pinget, mis ületab ESP32 ADC lubatud sisendit. Andmelehe alusel tuleb kontrollida pinge kogu kasutatavas rõhuvahemikus; 5 V andurit ei tohi ühendada ADC külge, kui väljund võib ületada viigu piiri.
 - Koodides eeldatakse anduri toitepingeks täpselt 5,0 V. Tegelik toitepinge mõjutab arvutatud rõhku, seega tuleb see mõõta ja arvutuses arvesse võtta.
 - Pumbakliendid eeldavad, et arvutis töötab aadressil `127.0.0.1:8000` API, mis võtab vastu `suck` ja `off` käske.
-- Pumba väljalülitus toimub tavapärasel lõpetamisel või Escape/Ctrl-C käsitlemisel. Kui protsess või arvuti katkeb ootamatult, ei taga praegune tarkvara ise, et pump lülitub välja.
+- `scripts_by_hands/pump_controller.py` proovib pumba välja lülitada tavalisel väljumisel, Escape'i või Ctrl-C korral. See ei taga väljalülitamist, kui protsess või arvuti katkeb ootamatult, ega siis, kui väljumine toimub enne juhtsilmuse `try/finally` plokki.
 - `scripts_ai/live_logger.py` lülitab pumba välja, kui absoluutrõhk langeb alla 75 kPa, ning muul juhul lülitab selle sisse, kui rõhk jääb etteantud ohutusvahemikku. See ei ole sama hüstereesiloogika, mida kasutab `scripts_ai/pump_control.py`.
 - Praegused failid näitavad rõhu mõõtmise ja pumba juhtimise prototüüpe. Need ei tõenda veel 100 Hz logimise täpsust, tehase targa kasti mõõtmist, puhumisrežiimi, Atomi ekraanikuva ega USB kadumise korral ohutut seiskamist.
 - Labori nõutud andmeanalüüsiks on vaja eraldi salvestada toormõõtmised, arvutada ADC sammu rõhueraldusvõime, uurida müra ja koostada spektrid.
@@ -86,11 +85,11 @@ Koodis olevad lävendid on esialgsed väärtused, mitte veel tehase targa kasti 
 
 1. Käivita MG400/pumba HTTP API teenus.
 2. Ühenda andur ning kontrolli multimeetriga toitepinget ja anduri väljundit.
-3. Ühenda AtomS3 arvutiga ja vali õige seriali port.
-4. Käivita valitud töövoog. Ära kasuta samal ajal `mpremote`-i ja teist COM-porti avavat skripti.
-5. Kontrolli, et seriali näidud on usutavad ja CSV-faili lisanduvad read.
+3. Ühenda AtomS3 arvutiga ja kontrolli skriptis kasutatavat seriali porti (praegu COM5).
+4. Käivita valitud töövoog. `scripts_by_hands` variandis käivita `pump_controller.py`; see saadab ise `controller.py` Atomile. Ära käivita samal ajal teist sama seriali porti kasutavat skripti ega `mpremote`-i ühendust.
+5. Kontrolli, et seriali näidud on usutavad, need ilmuvad konsooli ning CSV-faili lisanduvad read.
 6. Katseta pumba sisse- ja väljalülitumist, jälgides rõhku. Hoia hädaseiskamise võimalus käepärast.
-7. Peata programm tavapäraselt ja kontrolli, et API kinnitas pumba väljalülitamise.
+7. Peata programm tavapäraselt või Escape/Ctrl-C abil ning kontrolli, et API kinnitas pumba väljalülitamise.
 
 ## Labori järgmised vajalikud tulemused
 
