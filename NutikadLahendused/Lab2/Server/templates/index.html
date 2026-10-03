@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Robot Control</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 40px auto;
+        }
+
+        .box {
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+
+        button {
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+
+        input, select {
+            padding: 8px;
+            margin-bottom: 10px;
+        }
+
+        #robotStatus {
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>Robot Control</h1>
+
+<div class="box">
+    <h2>Robot status</h2>
+
+    <p>
+        Status:
+        <span id="robotStatus">UNKNOWN</span>
+    </p>
+
+    <p>
+        Last seen:
+        <span id="lastSeen">never</span>
+    </p>
+</div>
+
+
+<div class="box">
+
+    <h2>New job</h2>
+
+    <label for="jobType">Job:</label>
+    <br>
+
+    <select id="jobType">
+        <option value="letter">Draw letter</option>
+    </select>
+
+    <br>
+
+    <label for="letter">Letter:</label>
+    <br>
+
+    <input
+        id="letter"
+        type="text"
+        maxlength="1"
+        value="A"
+    >
+
+    <br>
+
+    <button onclick="sendJob()">
+        SEND JOB
+    </button>
+
+    <p id="sendResult"></p>
+
+</div>
+
+
+<div class="box">
+
+    <h2>Last job</h2>
+
+    <p>
+        ID:
+        <span id="lastJobId">-</span>
+    </p>
+
+    <p>
+        Job:
+        <span id="lastJobType">-</span>
+    </p>
+
+    <p>
+        Argument:
+        <span id="lastJobArg">-</span>
+    </p>
+
+    <p>
+        Status:
+        <span id="lastJobStatus">-</span>
+    </p>
+
+</div>
+
+
+<script>
+
+async function sendJob() {
+
+    const jobType = document.getElementById("jobType").value;
+    const letter = document.getElementById("letter").value;
+
+    const response = await fetch("/api/jobs", {
+
+        method: "POST",
+
+        headers: {
+            "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+            job: jobType,
+            arg: letter
+        })
+
+    });
+
+
+    const data = await response.json();
+
+    console.log(data);
+
+
+    if (response.ok) {
+
+        document.getElementById("sendResult").innerText =
+            "Job accepted. ID: " + data.job_id;
+
+    } else {
+
+        document.getElementById("sendResult").innerText =
+            "ERROR: " + (data.reason || data.error);
+
+    }
+
+}
+
+
+async function updateStatus() {
+
+    try {
+
+        const response = await fetch("/api/status");
+
+        const data = await response.json();
+
+        console.log(data);
+
+
+        if (data.robot_status) {
+
+            document.getElementById("robotStatus").innerText =
+                data.robot_status;
+
+        }
+
+
+        if (data.last_seen) {
+
+            document.getElementById("lastSeen").innerText =
+                data.last_seen;
+
+        } else {
+
+            document.getElementById("lastSeen").innerText =
+                "never";
+
+        }
+
+
+        if (data.last_job) {
+
+            document.getElementById("lastJobId").innerText =
+                data.last_job.id ?? "-";
+
+            document.getElementById("lastJobType").innerText =
+                data.last_job.job ?? "-";
+
+            document.getElementById("lastJobArg").innerText =
+                data.last_job.arg ?? "-";
+
+            document.getElementById("lastJobStatus").innerText =
+                data.last_job.status ?? "-";
+
+        }
+
+    } catch (error) {
+
+        document.getElementById("robotStatus").innerText =
+            "SERVER ERROR";
+
+        console.error(error);
+
+    }
+
+}
+
+
+// küsi staatust kohe lehe avamisel
+updateStatus();
+
+
+// seejärel iga 2 sekundi järel
+setInterval(updateStatus, 2000);
+
+</script>
+
+</body>
+</html>
