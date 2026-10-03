@@ -44,3 +44,19 @@
    - API on olemas Gitis
    - Postman:
      - Text type to JSON; Muidu ei tööta
+
+## 13.09.2026
+
+**Kohal olid: Ats, Serafima, Ivan, Daniil**
+
+Simulatsioon müraga: [Falstadi skeem](https://www.falstad.com/circuit/circuitjs.html?ctz=DwYwlgTgBAZgvAIgAwKgFwM6KQOiUgRlTBEQNwCZ8KB2GgZiQA4KA2ATnZtRACNEArCigAHfgiGoAbhEGoAtpkEBTALQEiAPgBQUKMClQAHmVZIojACxQCZmzVap4yVAHdnRWLISf5AQyMpRAocS1ReMD8sBBDHKEhsPEIEAHodPWAAc2NTcysbO3p6OOcUNN19VxyfOwIHG3YKexLsVPT9P2r823NLfALhZyYFP0R6HHoFMFaoTNGffEW2iuAqkwRuy2tuggonVvKMtbGkaw0mvvNz-ZdDyurLm12oR56bsvbVh-6el-ZWAbvZYZADyD3+AygAi2gNgZFQGFIt0+Rm+UAoMI0AIx3DhLigGGmPj26GUiAAggA7AAmAFdoEgADQUQDIBAIoAA1YH6VHrCgQihUF62dEUSZ44SEsgktBkhDkgAiAGEoPJabSafSoEgWfRGfROdzgLzEJYIQQIdCmhb2ECCUTdqhZRTlVApGAwABrI3HHyNZoWU7NIF3YAAJWqFut9SjTxJHji7kQJW8ZhGgTk8W8uHwRFDAHsoMpKYhhgSRKYbkYSRWXO0MiI3TNEXI7g2izMgviWxIjSl8zpgClwBAdEA)
+
+1. Lisati kaardistuse märkmed Git-reposse.
+2. Lisati esimesed AtomS3 ja arvuti vahelised rõhu mõõtmise ning pumba juhtimise skriptid.
+   - Atom loeb anduri ADC väärtust ja saadab selle USB-seriali kaudu arvutisse.
+   - Python teisendab näidu rõhuks, logib selle CSV-faili ning saadab pumba režiimi MG400 API-le.
+   - Lisati kaks katsetusvarianti: käsitsi kirjutatud skriptid ja eraldi `scripts_ai` variant.
+3. Täiendati käsitsi variandi logimist.
+   - CSV-sse lisati ajatempel, pinge, arvutatud rõhk ja pumba režiim.
+   - Pumbakontrollerisse lisati Escape-klahviga seiskamine.
+
