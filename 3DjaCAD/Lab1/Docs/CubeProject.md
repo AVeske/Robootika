@@ -7,11 +7,8 @@
 - Otsustasime, ja miks: probleemidele leidsime lahendused. PrusaSlicer vajalikud settingud: tähtis tõmmata vastava printeri draiver (Prusa CORE One HF0.4 nozzle), print setting on 0.20mm SPEED, filament on Prusament PLA. Printer on alustanud tööga.
 - Lahti järgmiseks korraks: Kontrollime prinditud tulemuse.
 
-### 2. Paindlik tükk
 
-**11.09 - Ats, Daniil, Ivan, serafima**
-
-### 3. Pastakahoidik
+### 2. Pastakahoidik
 
 **11.09 - Ats, Daniil, Ivan, serafima**
 Pastaka diameeter (väljast mõõdetud) - 9mm.

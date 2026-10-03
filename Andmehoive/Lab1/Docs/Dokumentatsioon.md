@@ -33,7 +33,7 @@ Toru T-liitmik jagab rõhuühenduse anduri ja iminapa vahel. Nii saab mõõta r�
 ## Dokumentatsioonifailid
 
 - [Labori tööleht](../README.md) sisaldab eesmärke, vahendeid, ülesandeid, ohutusjuhiseid, hindamist ja nõutud väljundeid. See on juhend, mitte veel täidetud tulemuste aruanne ega täielik arenduspäevik.
-- [Kaardistamine.md](Kaardistamine.md) on esmane koosoleku- ja komponentide kaardistus. Seal on kirjas esialgne seadistus, COM6 kasutamine, Thonny ja API katsetamise märkmed.
+- [Arenduspäevik.md](Arenduspäevik.md) sisaldab kuupäevastatud koosoleku- ja arendusmärkmeid, sealhulgas esialgset seadistust, COM6 kasutamist ning Thonny ja API katsetamist.
 - Tööruumi vaadeldud seisus pole loodud `sensor_choice.md`, `bom.md` ega `pump_control.md` faile, kuigi labori tööleht nõuab neid.
 
 ## `scripts_ai` failid
