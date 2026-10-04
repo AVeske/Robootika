@@ -45,6 +45,7 @@
    - Postman:
      - Text type to JSON; Muidu ei tööta
 
+
 ## 13.09.2026
 
 **Kohal olid: Ats, Serafima, Ivan, Daniil**
@@ -60,3 +61,16 @@ Simulatsioon müraga: [Falstadi skeem](https://www.falstad.com/circuit/circuitjs
    - CSV-sse lisati ajatempel, pinge, arvutatud rõhk ja pumba režiim.
    - Pumbakontrollerisse lisati Escape-klahviga seiskamine.
 
+## 03.10.2026
+
+1. Täiendati käsitsi variandi pumbakontrollerit.
+   - Seriali pordiks muudeti COM5 (115200 baud).
+   - Mõõteread kirjutatakse `log.csv` faili ja prinditakse samal kujul ka konsooli.
+   - Escape-klahvi või Ctrl-C vajutamisel ning tavalisel juhtsilmusest väljumisel küsitakse API-lt pumba väljalülitamist.
+2. Eemaldati vana `orchestrator.py`.
+   - `pump_controller.py` saadab nüüd `controller.py` sisu ise AtomS3-le; eraldi `mpremote`-i protsessi ei käivitata.
+   - Kasutada tuleb õiget seriali porti ning vältida sama pordi samaaegset avamist teise programmi poolt.
+
+   Anduri, maketeerimisplaadi ja AtomS3 ühenduse foto:
+
+![Rõhuandur ühendatuna maketeerimisplaadi kaudu AtomS3-ga](atom-andur-maketeerimisplaat.jpg)
