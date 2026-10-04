@@ -36,4 +36,9 @@
 3. Caddy avalikustamise dokument kirjeldab domeeni `narva1.roboarena.org`, HTTPS-i ning päringute suunamist Flaskile aadressil `127.0.0.1:5000`.
 - Caddy võtab vastu avalikud HTTPS-päringud ja vahendab need kohalikule Flaski rakendusele, et Flaski porti ei peaks internetti avama.
 
+4. Listaud Flaski keskkonnamuutujate laadimine `.env` failist.
+   - `Server/app.py` kasutab `python-dotenv` paketi `load_dotenv()` funktsiooni, et laadida rakenduse käivitamisel `.env` faili väärtused keskkonda.
+   - Atomi API võti loetakse endiselt keskkonnamuutujast `ATOM_API_KEY`; kui seda pole määratud, jääb alles testimiseks mõeldud `CHANGE_ME` vaikeväärtus.
+   - `python-dotenv` lisati serveri `requirements.txt` faili.
+   - `.env` faili ennast muudatustes ei lisatud; saladusi ei kirjutata rakenduse lähtekoodi.
 

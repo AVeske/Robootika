@@ -2,7 +2,9 @@ import os
 from datetime import datetime
 
 from flask import Flask, jsonify, render_template, request
+from dotenv import load_dotenv
 
+load_dotenv()
 
 app = Flask(__name__)
 
