@@ -371,7 +371,7 @@ Tulemus:
 /root/Robootika/
 ```
 
-## 17. Hetkeseis - 03.10.2026
+## 10. Hetkeseis - 03.10.2026
 
 Valmis:
 
