@@ -50,8 +50,6 @@
 
 **Kohal olid: Ats, Serafima, Ivan, Daniil**
 
-Simulatsioon müraga: [Falstadi skeem](https://www.falstad.com/circuit/circuitjs.html?ctz=DwYwlgTgBAZgvAIgAwKgFwM6KQOiUgRlTBEQNwCZ8KB2GgZiQA4KA2ATnZtRACNEArCigAHfgiGoAbhEGoAtpkEBTALQEiAPgBQUKMClQAHmVZIojACxQCZmzVap4yVAHdnRWLISf5AQyMpRAocS1ReMD8sBBDHKEhsPEIEAHodPWAAc2NTcysbO3p6OOcUNN19VxyfOwIHG3YKexLsVPT9P2r823NLfALhZyYFP0R6HHoFMFaoTNGffEW2iuAqkwRuy2tuggonVvKMtbGkaw0mvvNz-ZdDyurLm12oR56bsvbVh-6el-ZWAbvZYZADyD3+AygAi2gNgZFQGFIt0+Rm+UAoMI0AIx3DhLigGGmPj26GUiAAggA7AAmAFdoEgADQUQDIBAIoAA1YH6VHrCgQihUF62dEUSZ44SEsgktBkhDkgAiAGEoPJabSafSoEgWfRGfROdzgLzEJYIQQIdCmhb2ECCUTdqhZRTlVApGAwABrI3HHyNZoWU7NIF3YAAJWqFut9SjTxJHji7kQJW8ZhGgTk8W8uHwRFDAHsoMpKYhhgSRKYbkYSRWXO0MiI3TNEXI7g2izMgviWxIjSl8zpgClwBAdEA)
-
 1. Lisati kaardistuse märkmed Git-reposse.
 2. Lisati esimesed AtomS3 ja arvuti vahelised rõhu mõõtmise ning pumba juhtimise skriptid.
    - Atom loeb anduri ADC väärtust ja saadab selle USB-seriali kaudu arvutisse.
@@ -60,6 +58,25 @@ Simulatsioon müraga: [Falstadi skeem](https://www.falstad.com/circuit/circuitjs
 3. Täiendati käsitsi variandi logimist.
    - CSV-sse lisati ajatempel, pinge, arvutatud rõhk ja pumba režiim.
    - Pumbakontrollerisse lisati Escape-klahviga seiskamine.
+
+
+Falstad skeem müraga:
+[Link](https://www.falstad.com/circuit/circuitjs.html?ctz=DwYwlgTgBAZgvAIgAwKgFwM6KQOiUgRlTBEQNwCZ8KB2GgZiQA4KA2ATnZtRACNEArCigAHfgiGoAbhEGoAtpkEBTALQEiAPgBQUKMClQAHmVZIojACxQCZmzVap4yVAHdnRWLISf5AQyMpRAocS1ReMD8sBBDHKEhsPEIEAHodPWAAc2NTcysbO3p6OOcUNN19QxMfOwIHKApLczqS7DdnEu8zBQCg5DwBYm9cfCJyjNccmKb7VgskaxanNvH9Pyn823Mm5u7YRCYexHocegUwNqhMvzJ8O9T0-UnqzctrTYIKZZdV4GfjhY2T5QHZAr77H6PP5TUEaCgg-AFYSlB4VaHVWF2SzsOZbb5lKEAeRhOKRUAEbyR308GFIkLRRhh5kai1sDUs3AhwgwFx84LQykQAEEAHYAEwArtAkAAaCiAZAIBFAAGqojKM6p1awUAjaoQNOr41A8sj8wUIACyAB+IOsAI36+Sq34a4KkihUEFsj1nLnG3mfVAC4UAEQAwlB5BKxcoADZQJDy+gy+gqtX6V0IbG40kU+EEThGqAmvlB81C8NQKRgMAAa3TwAA9lBlCKDsaRKZvkZwZ2XI8MiIq5daXJVoOW5c+ty6YNfilGzpgClwBBNEA)
+![Skeem](Skeem.JPG)
+
+Skeem demonstreerib, et 0,2–5 V andurisignaal koos müraga ei mahu otse 0–3,3 V ADC sisendvahemikku ning üle 3,3 V olev signaal lõigatakse ära.
+
+Skeemi kirjeldus:
+- Andur 0,2–5 V. See on vahelduvpingeallikas, mis simuleerib päris anduri väljundit. Selle signaal muutub ajas vahemikus 0,2 V kuni 5 V.
+- Müra ±50 mV. See on eraldi väike vahelduvpingeallikas, mis lisab andurisignaalile väikese juhusliku või kiiresti muutuva häire. Selle eesmärk on modelleerida päriselus tekkivat elektrilist müra. Näiteks kui andur annab parasjagu 2,00 V ja müra on +0,04 V, siis ADC mudelisse jõuab umbes 2,04 V. Kui müra on −0,03 V, jõuab sinna umbes 1,97 V. Müra amplituud on palju väiksem kui põhisignaalil, seega ta ei muuda kogu signaali olemust, vaid tekitab selle ümber väikese "värina".
+- ADC mudel 0–3,3 V. ADC tähendab Analog-to-Digital Converter ehk analoog-digitaalmuundurit. Selle ülesanne päris mikrokontrolleris oleks analoogpinge digitaalseks väärtuseks teisendada. Antud skeemis kasutatakse op-võimendit pingejärgurina, et näidata ADC sisendi lubatud pingevahemikku. Op-võimendi väljund on piiratud vahemikku 0–3,3 V.
+- Tagasiside op-võimendil. Op-võimendi väljund on ühendatud tagasi tema negatiivsele − sisendile. See tekitab negatiivse tagasiside ja muudab op-võimendi pingejärguriks.
+- ADC viik. See on lihtsalt skeemi väljundpunkt, mis tähistab mikrokontrolleri ADC sisendviiku. Ehk see on pinge, mida ADC "näeks".
+- Scope. Scope ehk ostsilloskoop kuvab ADC viigu pinge ajas. Selle pealt peaks olema näha kaks asja:
+   - müra tõttu ei ole joon täiesti sile;
+   - kui andurisignaal läheb üle 3,3 V, lõigatakse laine ülemine osa ära.
+
+
 
 ## 03.10.2026
 
@@ -74,3 +91,5 @@ Simulatsioon müraga: [Falstadi skeem](https://www.falstad.com/circuit/circuitjs
    Anduri, maketeerimisplaadi ja AtomS3 ühenduse foto:
 
 ![Rõhuandur ühendatuna maketeerimisplaadi kaudu AtomS3-ga](atom-andur-maketeerimisplaat.jpg)
+
+
