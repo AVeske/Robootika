@@ -16,7 +16,10 @@ app = Flask(__name__)
 # Atomi API võti.
 # Loetakse environment variable'ist.
 # Kui seda pole määratud, kasutatakse testimiseks CHANGE_ME.
-ATOM_API_KEY = os.getenv("ATOM_API_KEY", "CHANGE_ME")
+ATOM_API_KEY = os.getenv("ATOM_API_KEY")
+
+if not ATOM_API_KEY:
+    raise RuntimeError("ATOM_API_KEY is not configured")
 
 # Kui kaua töö serveris kehtib.
 JOB_TTL_SECONDS = 30
