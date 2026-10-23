@@ -28,6 +28,9 @@
             margin-bottom: 10px;
         }
 
+        table { width: 100%; border-collapse: collapse; }
+        th, td { text-align: left; padding: 6px; border-bottom: 1px solid #ddd; }
+
         #robotStatus {
             font-weight: bold;
         }
@@ -125,6 +128,15 @@
 </div>
 
 
+<div class="box">
+    <h2>Job queue and recent results</h2>
+    <p>Waiting for Atom: <span id="queueLength">0</span></p>
+    <table>
+        <thead><tr><th>ID</th><th>Job</th><th>Argument</th><th>Status</th></tr></thead>
+        <tbody id="jobRows"></tbody>
+    </table>
+</div>
+
 <script>
 
 document.getElementById("jobType").addEventListener("change", (event) => {
@@ -188,7 +200,18 @@ async function updateStatus() {
         if (!response.ok) throw new Error("Status request failed");
         const data = await response.json();
 
-        console.log(data);
+        document.getElementById("queueLength").textContent = data.queue_length ?? 0;
+        const rows = document.getElementById("jobRows");
+        rows.replaceChildren();
+        for (const job of data.jobs ?? []) {
+            const row = document.createElement("tr");
+            for (const key of ["id", "job", "arg", "status"]) {
+                const cell = document.createElement("td");
+                cell.textContent = job[key] ?? "-";
+                row.appendChild(cell);
+            }
+            rows.appendChild(row);
+        }
 
 
         if (data.robot_status) {
