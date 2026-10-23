@@ -62,10 +62,12 @@
 
     <select id="jobType">
         <option value="letter">Draw letter</option>
+        <option value="show_image">Show image</option>
     </select>
 
     <br>
 
+    <div id="letterFields">
     <label for="letter">Letter:</label>
     <br>
 
@@ -78,6 +80,15 @@
 
     <br>
 
+    </div>
+    <div id="imageFields" hidden>
+        <label for="image">Image:</label>
+        <select id="image">
+            <option value="smile">Smile</option>
+            <option value="heart">Heart</option>
+            <option value="checker">Checker</option>
+        </select>
+    </div>
     <button onclick="sendJob()">
         SEND JOB
     </button>
@@ -116,7 +127,14 @@
 
 <script>
 
+document.getElementById("jobType").addEventListener("change", (event) => {
+    const isLetter = event.target.value === "letter";
+    document.getElementById("letterFields").hidden = !isLetter;
+    document.getElementById("imageFields").hidden = isLetter;
+});
+
 async function sendJob() {
+    try {
 
     const jobType = document.getElementById("jobType").value;
     const letter = document.getElementById("letter").value;
@@ -131,7 +149,7 @@ async function sendJob() {
 
         body: JSON.stringify({
             job: jobType,
-            arg: letter
+            arg: jobType === "letter" ? letter : document.getElementById("image").value
         })
 
     });
@@ -154,6 +172,10 @@ async function sendJob() {
 
     }
 
+    await updateStatus();
+    } catch (error) {
+        document.getElementById("sendResult").innerText = "Server connection failed. Check job status before retrying.";
+    }
 }
 
 
@@ -163,6 +185,7 @@ async function updateStatus() {
 
         const response = await fetch("/api/status");
 
+        if (!response.ok) throw new Error("Status request failed");
         const data = await response.json();
 
         console.log(data);

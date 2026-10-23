@@ -1,0 +1,18 @@
+[Unit]
+Description=Robot Flask post office
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/root/Robootika/NutikadLahendused/Lab2/Server
+EnvironmentFile=/etc/robot-postoffice.env
+Environment=PYTHONDONTWRITEBYTECODE=1
+ExecStart=/root/Robootika/NutikadLahendused/Lab2/Server/.venv/bin/gunicorn --workers 1 --threads 1 --bind 127.0.0.1:5000 app:app
+Restart=on-failure
+RestartSec=3
+UMask=0077
+NoNewPrivileges=true
+ProtectSystem=full
+
+[Install]
+WantedBy=multi-user.target

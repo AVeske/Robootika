@@ -32,7 +32,6 @@ ONLINE_TIMEOUT_SECONDS = 10
 ALLOWED_JOBS = [
     "letter",
     "show_image",
-    "move_test_piece"
 ]
 
 
@@ -51,6 +50,19 @@ last_seen = None
 
 # Järgmise töö ID.
 next_job_id = 1
+
+# Pildid peavad olema samade nimedega ka Atomi püsivaras.
+ALLOWED_IMAGES = ("smile", "heart", "checker")
+
+
+def expire_pending_job():
+    global current_job
+    if current_job is not None:
+        age = (datetime.now() - current_job["created_at"]).total_seconds()
+        if age >= JOB_TTL_SECONDS:
+            current_job["status"] = "expired"
+            current_job = None
+
 
 
 # --------------------------------------------------
@@ -73,6 +85,9 @@ def create_job():
 
     data = request.get_json(silent=True) or {}
 
+    if not isinstance(data, dict):
+        return jsonify(status="refused", reason="JSON object required"), 400
+
     job_type = data.get("job")
     argument = data.get("arg")
 
@@ -92,6 +107,12 @@ def create_job():
             }), 400
 
     # Loome uue töö.
+    if job_type == "show_image" and argument not in ALLOWED_IMAGES:
+        return jsonify(status="refused", reason="Unknown image; use smile, heart or checker"), 400
+    expire_pending_job()
+    if last_job is not None and last_job["status"] in ("waiting", "sent"):
+        return jsonify(status="refused", reason="Another job is still active"), 409
+
     job = {
         "id": next_job_id,
         "job": job_type,
@@ -133,6 +154,7 @@ def poll():
 
     # Atom võttis serveriga ühendust.
     last_seen = datetime.now()
+    expire_pending_job()
 
     # Kui tööd pole, pole midagi anda.
     if current_job is None:
@@ -200,6 +222,9 @@ def result():
 
     data = request.get_json(silent=True) or {}
 
+    if not isinstance(data, dict):
+        return jsonify(error="JSON object required"), 400
+
     job_id = data.get("id")
     result_value = data.get("result")
 
@@ -227,7 +252,17 @@ def result():
             "error": "Invalid result"
         }), 400
 
+    if last_job["status"] != "sent":
+        if last_job["status"] == result_value:
+            return jsonify(status="ok")
+        return jsonify(error="Job is not awaiting a result"), 409
+
     # Salvestame tulemuse.
+    if last_job["status"] != "sent":
+        if last_job["status"] == result_value:
+            return jsonify(status="ok")
+        return jsonify(error="Job is not awaiting a result"), 409
+
     last_job["status"] = result_value
 
     return jsonify({
@@ -242,6 +277,7 @@ def result():
 
 @app.route("/api/status")
 def status():
+    expire_pending_job()
 
     # --------------------------------------------------
     # ONLINE / OFFLINE
@@ -282,7 +318,7 @@ def status():
         "robot_status": robot_status,
 
         "last_seen": (
-            last_seen.strftime("%H:%M:%S")
+            last_seen.astimezone().isoformat(timespec="seconds")
             if last_seen
             else None
         ),
@@ -296,4 +332,4 @@ def status():
 # --------------------------------------------------
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="127.0.0.1", port=5000, debug=False)

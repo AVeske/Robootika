@@ -85,7 +85,6 @@ Praegu lubatud tööde nimekiri:
 
 - `letter`
 - `show_image`
-- `move_test_piece`
 
 ### arg
 
@@ -443,7 +442,7 @@ Request body puudub.
 ```json
 {
   "robot_status": "ONLINE",
-  "last_seen": "09:14:30",
+  "last_seen": "2026-10-23T09:14:30+03:00",
   "last_job": {
     "id": 1,
     "job": "letter",
@@ -642,3 +641,13 @@ Server ei loo ise ühendust Atomi ega robotiga.
 
 Atom võtab ise serveriga perioodiliselt ühendust.
 ```
+
+## Täpsustused 23.10.2026
+
+`show_image` argument on üks nimedest `smile`, `heart`, `checker`.
+Tundmatu pilt saab HTTP 400 ja `refused`. Ootel või saadetud töö ajal
+saab uus lubatud töö HTTP 409 ja `refused`; eelmine töö ei kirjutata üle.
+Ootel töö aegub 30 sekundi täitumisel nii polli kui ka staatusepäringu ajal.
+Tulemust saab anda ainult saadetud tööle; sama tulemuse kordussaatmine on lubatud.
+`last_seen` on ISO 8601 ajatempel koos serveri ajavööndi nihkega.
+Paigaldus ja käsitsi kontroll: [deployment-and-verification.md](deployment-and-verification.md).
