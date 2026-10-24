@@ -15,7 +15,7 @@ Too repo muudatused enne serverisse. Näites on repo `/root/Robootika` all;
 muu asukoha puhul muuda teenusefailis WorkingDirectory ja ExecStart radu.
 
 ```bash
-cd /root/Robootika/NutikadLahendused/Lab2/Server
+cd /root/Robootika/NutikadLahendused/Lab2/server
 python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
 ```
@@ -116,7 +116,9 @@ vajavad Atomi püsivara muudatust ning seadmega katsetamist.
 
 Saada `/api/jobs` JSON `{"job":"unknown","arg":null}`.
 Oodatav: HTTP 400, `status: refused`; olemasolev töö jääb alles.
-Vigane argument saab samuti refused. Lubatud tööd pannakse FIFO järjekorda.
+Vigane argument saab samuti refused. `letter` lubab täpselt üht ASCII tähte A–Z või a–z; väiketäht salvestatakse suurtähena. Numbrid, arvväärtused, tühikud, mitu märki ja muud Unicode tähed lükatakse tagasi. Veebilehel saab tähe valida A–Z rippmenüüst. Server kontrollib sisendit ka otse API kaudu saatmisel. Lubatud tööd pannakse FIFO järjekorda.
+
+Pärast uuendatud koodi dropletisse toomist käivita Server/ kaustas `python -m unittest discover -s tests -v`, seejärel taaskäivita `robot-postoffice` teenus. Värskenda telefonis lehte. Seadmega kontrollimiseks saada otse API-sse `{"job":"letter","arg":"7"}`, `{"job":"letter","arg":7}` ja tundmatu töö: kõik peavad vastama HTTP 400 / refused. Kontrolli tühja järjekorraga, et robot ei liigu. Üks lubatud täht peab seejärel endiselt töötama.
 
 ## 6. Vana töö aegub
 
@@ -135,7 +137,7 @@ Serveri ühendusvea korral näitab leht SERVER ERROR.
 
 ## Kohalik API kontroll
 
-Serveri kaustas: `python -m unittest discover -s tests -v`.
+Server/ kaustas: `python -m unittest discover -s tests -v`.
 See kontrollib serveri protokolli, mitte Atomi ekraani ega roboti liikumist.
 
 Nõuete koodikontroll, katkestuskatsed ja latentsuse mõõtmise juhend: [verification-and-latency.md](verification-and-latency.md).

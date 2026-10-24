@@ -82,3 +82,8 @@ Atom loeb vastusest välja töö tüübi ja argumendi ning annab saadud info eda
 Täpsemalt:
 
 `POST /api/jobs` salvestab veebilehelt saadetud töö serverisse ning `POST /api/poll` kaudu küsib Atom serverilt regulaarselt, kas uus töö on saadaval.
+
+
+### Täpsustus 24.10.2026: sisend kontrollitakse enne salvestamist
+
+Ülal on 04.10 lahenduse ajalooline kirjeldus. Praegune server hoiab töid `jobs` sõnastikus ja ootel tööde ID-sid FIFO `pending_jobs` järjekorras. Lubatud töö nimed on `letter` ja `show_image`. `letter` lubab ainult üht algset ASCII tähte A–Z või a–z; numbrid ja tundmatud tööd saavad HTTP 400 / refused enne töö loomist. Keeldumine ei asenda varasemat tööd ega muuda järjekorda või ID loendurit. `show_image` peab viitama olemasolevale üles laaditud PNG-le. Täpne kehtiv leping: [server_api.md](server_api.md).

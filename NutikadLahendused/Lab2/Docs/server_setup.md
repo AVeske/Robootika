@@ -411,3 +411,9 @@ SSH privaatvõti jääb ainult arvutisse, kus see loodi.
 Atom API võti salvestatakse hiljem Atomi seadistusse, mitte Git reposse.
 
 Avalikku internetti ei avata Flaski sisemist porti. Flaskile pääseb väljast ligi Caddy ja HTTPS kaudu.
+
+## Sisendikontrolli uuendus 24.10.2026
+
+Lubatud tööd on `letter` ja `show_image`; tähetöö võtab ainult ühe ASCII tähe A–Z või a–z. Numbrid ja tundmatud tööd lükatakse tagasi enne järjekorda lisamist. Veebilehe tähevalik on A–Z rippmenüü. Kehtiv API: [server_api.md](server_api.md).
+
+Pärast muudatuste serverisse toomist käivita Server/ kaustas `python -m unittest discover -s tests -v` ning taaskäivita `robot-postoffice` teenus. [Paigalduse ja kontrolli juhend](deployment-and-verification.md) kirjeldab keelatud sõnumite seadmekatset. Kohalikud automaattestid ei tõenda, et dropleti kasutatav kood on juba uuendatud.

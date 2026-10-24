@@ -74,12 +74,12 @@
     <label for="letter">Letter:</label>
     <br>
 
-    <input
-        id="letter"
-        type="text"
-        maxlength="1"
-        value="A"
-    >
+    <select id="letter" aria-describedby="letterHelp">
+        {% for letter in "ABCDEFGHIJKLMNOPQRSTUVWXYZ" %}
+        <option value="{{ letter }}">{{ letter }}</option>
+        {% endfor %}
+    </select>
+    <p id="letterHelp">Choose one letter A–Z. Numbers are not allowed.</p>
 
     <br>
 
@@ -228,6 +228,15 @@ async function sendJob() {
 
     const jobType = document.getElementById("jobType").value;
     const letter = document.getElementById("letter").value;
+
+    if (!["letter", "show_image"].includes(jobType)) {
+        document.getElementById("sendResult").textContent = "Unknown or forbidden job.";
+        return;
+    }
+    if (jobType === "letter" && !/^[A-Za-z]$/.test(letter)) {
+        document.getElementById("sendResult").textContent = "Choose one letter A–Z. Numbers are not allowed.";
+        return;
+    }
 
     const response = await fetch("/api/jobs", {
 

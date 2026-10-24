@@ -32,3 +32,16 @@
 
 
 
+
+
+## 24.10.2026 — failistruktuuri korrastamine
+
+- Failid paigutati laborijuhendi kaustajaotuse järgi; README-sse lisati otselingid.
+- Dokumentatsioon on `docs/` all. Programmi- ja veebikoodi sisu ei muudetud.
+
+
+## 24.10.2026 — Atomi lehe seadete ja testide dokumentatsioon
+
+- Kõrvalrepo püsivara põhjal täiendati `docs/atom_page.md`: lehe osad, nupud, API teed, salvestamine ja katsejuhis.
+- `TEST DISPLAY` ning pildi- ja žestiseaded on koodis olemas.
+- Selgitati, kuidas tähevaliku režiim mõjutab nupužestide kasutamist. Püsivara ei muudetud ega laaditud seadmesse.

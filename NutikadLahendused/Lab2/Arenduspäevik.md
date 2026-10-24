@@ -80,3 +80,19 @@ Muudatused tehtud ESP32-Image-Server-Fork branchi atom-image-server kausta faili
    - Lisati ka signaalid ja logid, millega näha, kas WiFi on ühendatud ja mida server vastab.
    - Kasu: see teeb seadme palju rohkem “hallatavaks” ja “keskjuhtimisega” sobivaks; kood on valmis edasiseks serveripoolseks kontrolliks.
 
+
+
+## 24.10.2026 — failistruktuuri korrastamine
+
+- Failid paigutati laborijuhendi kaustajaotuse järgi; README-sse lisati otselingid.
+- Dokumentatsioon on `Docs/` all. Programmi- ja veebikoodi sisu ei muudetud.
+- Mõõtetabelid liikusid `Docs/` alla ja analüüsitööriist `src/` alla. `Docs/` ja `Server/` säilitasid olemasoleva tähesuuruse; teenusefaili rajad jäid samaks.
+
+
+## 24.10.2026 — lubatud tööde ja tähe sisendi kontroll
+
+- Tähe vabatekstiväli asendati A–Z valikuga ja brauserisse lisati saatmiseelne kontroll.
+- Server kontrollib algset sisendit mustriga `[A-Za-z]` enne suurtäheks teisendamist. Nii ei pääse Unicode `ı` ja `ſ` teisendamise kaudu lubatud täheks. Numbrid ja tundmatud tööd annavad HTTP 400 / refused.
+- Lubatud töödeks jäid `letter` ja `show_image`. Pildi ID numbreid ei keelatud.
+- Laiendati teste: sobivad kõik 52 ASCII tähte; vigane sisend ei muuda lubatud ootel tööd ega jõua poll-vastusesse. Kõik 12 serveritesti läbisid.
+- Uuendati API, kontrolli, paigalduse ja tööde salvestuse dokumentatsiooni. Järgmiseks tuleb uuendus dropletis kasutusele võtta ja teha füüsiline mitteliikumise katse.

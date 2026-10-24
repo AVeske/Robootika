@@ -11,7 +11,7 @@
 | Atom vooluta → OFFLINE | Pärast üle 10 s ilma autentitud pollita OFFLINE, last_seen säilib; lehe päringuvahe on 2 s | Veel dokumenteerimata |
 
 Kontrollitud failid: selle repo `Server/app.py`, `Server/tests/test_app.py` ning
-kõrvalrepo `ESP32-Image-Server-Fork/atom-image-server/src/server_client.cpp`,
+kõrvalrepo `ESP32-Image-Server-Fork/atom-image-Server/src/server_client.cpp`,
 `letter_sender.cpp` ja `main.cpp`. Jaama MG400 teostust tööruumis ei leitud.
 
 Tundmatu töö ja vigane letter on kaks eri katset. Mõlemal peab olema refused
@@ -60,7 +60,7 @@ Salvesta kuupäev, koodi commitid, töö ID, nähtud tulemus ja video/logi faili
    Umbes 10–12 s pärast peab leht näitama OFFLINE ning sama last_seen aega.
    Atomi tagasi ühendamisel peab ilmuma ONLINE ja uus aeg.
 
-Serveri automaatkontroll (ei liiguta robotit): Server kaustas
+Serveri automaatkontroll (ei liiguta robotit): Server/ kaustas
 `.venv/Scripts/python.exe -m unittest discover -s tests -v` (Windows) või
 `.venv/bin/python -m unittest discover -s tests -v` (Linux).
 
@@ -84,19 +84,19 @@ mõõtmiseks. Kasuta mõlemas seerias sama letter_A tööd ja samu roboti seadei
 4. Enne järgmist vajutust peab robot olema töö lõpetanud ja järjekord tühi.
    Ära saada 30 tööd korraga. Varieeri vajutuste vahet, et neid mitte kogemata
    pollimise rütmiga sünkroniseerida. Tee soojendus enne mõõteseeriat.
-5. Täida `Measurements/lab2_latency.csv`: read 1–30 on 1 s intervalliga,
+5. Täida `Docs/lab2_latency.csv`: read 1–30 on 1 s intervalliga,
    31–60 on 5 s intervalliga. Tühjad latency_ms väljad on mõõtmata, mitte nullid.
    Pane video, kaadrid/ajatemplid, FPS ja ebaõnnestunud katsed eraldi märkmetesse.
    Ära eemalda aeglasi mõõtmisi; ühendusveaga katse dokumenteeri ja korda.
 6. Võrdluseks mõõda Labori 1 otsene Atom → jaam tee sama esimese liigutuseni.
-   Täida `Measurements/lab1_latency.csv` (intervall 0 = pollimist pole).
+   Täida `Docs/lab1_latency.csv` (intervall 0 = pollimist pole).
    Mallis on 30 vaatlust; olemasolevat Labori 1 mõõtmist võib kasutada, kui
    meetod ja tingimused on võrreldavad. Ära asenda seda arvutatud oletusega.
 
 Lab2 kaustast kokkuvõtte arvutamine (Python standardteek, lisapakette pole):
 
 ```bash
-python Tools/summarize_latency.py Measurements/lab2_latency.csv --lab1 Measurements/lab1_latency.csv
+python src/summarize_latency.py Docs/lab2_latency.csv --lab1 Docs/lab1_latency.csv
 ```
 
 Väljundis on iga seeria mõõtmiste arv, keskmine, min, max ja Labori 1 keskmise
@@ -120,3 +120,12 @@ pool intervallist; see pole roboti kogulatentsuse mõõtmistulemus.
 | 1 s, 30 mõõtmist | | | Mõõtmata |
 | 5 s, 30 mõõtmist | | | Mõõtmata |
 | Labori 1 võrdlus | | | Mõõtmata |
+
+
+## Sisendikontrolli kontroll 24.10.2026
+
+Server ja brauser lubavad ainult töö nimesid `letter` ja `show_image`. `letter` argument on täpselt üks ASCII täht `[A-Za-z]`; väiketäht teisendatakse pärast kontrolli suurtäheks. Veebilehel on A–Z rippmenüü ja saatmiseelne kontroll. Server kontrollib sõltumatult ka käsitsi koostatud API-päringuid. `show_image` argument on endiselt olemasoleva PNG ID, mille numbrid on lubatud; ainult tähtede nõue puudutab tähetööd.
+
+Käivitatud `python -m unittest discover -s tests -v`: **12 testi läbisid**. Uued katsed kontrollivad kõiki 52 suur- ja väiketähte, numbreid 0–9, JSON arvväärtusi, tühikuid, mitut märki, Unicode erijuhte (`ı`, `ſ`, täpitähed), vigaseid JSON tüüpe ja tundmatuid töö nimesid. Keeldumine annab HTTP 400 / refused ega muuda olemasolevat järjekorda, töid või ID loendurit. Poll saab ainult varem lubatud töö; pärast selle väljastamist on `msg:null`.
+
+See tõendab serveri kaudu keelatud sisendi tõkestamist. Atomi ja roboti füüsilise mitteliikumise katse jääb eespool kirjeldatud seadmekatse protokolli, mida ei märgita automaattesti alusel tehtuks.

@@ -1,5 +1,16 @@
 ## Nutikad Lahendused: Labor 1 — Robot, ekraan ja tähemasin
 
+## Esitatud tööfailid
+
+- [Arenduspäevik](Arenduspäevik.md)
+- [Atomi leht ja testid](docs/atom_page.md)
+- [Käivitamine ja tähe kirjutamise lahendus](docs/letter_writer.md)
+- [Jaama lähtekoodi asukoht](src/README.md)
+- [Atomi püsivara asukoht](firmware/README.md)
+- [Asendifaili asukoht](data/README.md)
+
+Dokumentatsioon on `docs/` all. Allolev laborijuhend on säilitatud; kaustade olemasolu ei tähenda, et kõik nõutud tööd oleksid tehtud.
+
 **Töömaht:** 28 tundi | **Hindamine:** 20 punkti | **Meeskond:** 3 tudengit | **Välja antud:** 12.09.26 | **Tellimise kuupäev:** 22.09.26 | **Esimene kaitsmine:** 06.10.26, veebis
 
 ### Kuidas see dokument töötab

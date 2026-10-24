@@ -1,686 +1,185 @@
-# Server API
+# Server API — kes kellele mida saadab
 
-See dokument kirjeldab Nutilahenduste Labor 2 Flask serveri API endpoint'e ja nende kasutamist.
+Uuendatud 24.10.2026. Serveri kirjeldus vastab [app.py](../Server/app.py) ja [veebilehe](../Server/templates/index.html) praegusele teostusele. Avalik baas-URL on `https://narva1.roboarena.org`; allpool toodud API teed lisatakse selle lõppu.
 
-Server töötab postkontori põhimõttel:
+## Osapooled ja vastutus
 
-1. Kasutaja saadab veebilehe kaudu töö serverisse.
-2. Server hoiab töö ootel.
-3. Atom küsib serverilt perioodiliselt uut tööd.
-4. Kui töö on olemas, lubatud ja veel kehtiv, annab server selle Atomile.
-5. Atom annab töö edasi jaamale.
-6. Jaam täidab töö MG400 robotiga.
-7. Atom saadab töö tulemuse serverile tagasi.
-8. Veebileht küsib serverilt roboti ja viimase töö staatust.
-
-Server ei algata ise ühendust Atomiga. Atom võtab serveriga ise ühendust.
-
----
-
-## GET /
-
-### Kasutaja
-
-Veebibrauser.
-
-### Eesmärk
-
-Avab roboti juhtimise veebilehe.
-
-### Vastus
-
-Server tagastab:
-
-`templates/index.html`
-
-Veebilehe kaudu saab:
-
-- näha roboti ONLINE / OFFLINE staatust;
-- näha, millal Atom viimati serveriga ühendust võttis;
-- valida lubatud töö;
-- sisestada töö argumendi;
-- saata töö serverisse;
-- näha viimase töö staatust.
-
----
-
-# POST /api/jobs
-
-## Kasutaja
-
-Veebileht / kasutaja.
-
-## Eesmärk
-
-Lisab serverisse uue töö.
-
-Töö salvestatakse serverisse ja Atom saab selle järgmise pollimise käigus küsida.
-
-## Request
-
-HTTP method:
-
-`POST`
-
-Content-Type:
-
-`application/json`
-
-Näide:
-
-```json
-{
-  "job": "letter",
-  "arg": "A"
-}
-```
-
-## Väljad
-
-### job
-
-Töö tüüp.
-
-Praegu lubatud tööde nimekiri:
-
-- `letter`
-- `show_image`
-
-### arg
-
-Töö argument.
-
-Näiteks `letter` töö puhul:
-
-```json
-{
-  "job": "letter",
-  "arg": "A"
-}
-```
-
-`letter` töö puhul peab argument olema täpselt üks märk.
-
-## Edukas vastus
-
-Näide:
-
-```json
-{
-  "job_id": 1,
-  "status": "accepted"
-}
-```
-
-HTTP status:
-
-`201`
-
-## Keelatud töö
-
-Näide:
-
-```json
-{
-  "job": "move_robot_10mm",
-  "arg": "left"
-}
-```
-
-Vastus:
-
-```json
-{
-  "status": "refused",
-  "reason": "Unknown or forbidden job"
-}
-```
-
-HTTP status:
-
-`400`
-
-## Vale letter argument
-
-Näiteks:
-
-```json
-{
-  "job": "letter",
-  "arg": "ABC"
-}
-```
-
-Vastus:
-
-```json
-{
-  "status": "refused",
-  "reason": "Letter must be exactly one character"
-}
-```
-
-HTTP status:
-
-`400`
-
----
-
-# POST /api/poll
-
-## Kasutaja
-
-Atom.
-
-## Eesmärk
-
-Atom kasutab seda endpoint'i perioodiliselt, et:
-
-- anda serverile teada, et Atom on online;
-- uuendada `last_seen` aega;
-- saata serverile oma olek;
-- küsida serverilt järgmist ootel tööd.
-
-Server ise Atomiga ühendust ei alusta.
-
-## Authentication
-
-Atom peab saatma HTTP headeri:
-
-`X-API-Key`
-
-Näide:
-
-```text
-X-API-Key: <ATOM_API_KEY>
-```
-
-API key väärtus ei ole Git repos ega `app.py` failis.
-
-Server loeb selle environment variable'ist:
-
-```text
-ATOM_API_KEY
-```
-
-## Request
-
-HTTP method:
-
-`POST`
-
-Content-Type:
-
-`application/json`
-
-Näide:
-
-```json
-{
-  "device": "team-atom",
-  "robot": "ready"
-}
-```
-
-Praeguses serveriversioonis kasutatakse poll päringut eelkõige Atomi online oleku ja töö küsimise jaoks.
-
-## Vastus, kui töö on olemas
-
-Näide:
-
-```json
-{
-  "msg": 1,
-  "job": "letter",
-  "arg": "A"
-}
-```
-
-### msg
-
-Töö ID.
-
-### job
-
-Töö tüüp.
-
-### arg
-
-Töö argument.
-
-## Vastus, kui tööd ei ole
-
-```json
-{
-  "msg": null
-}
-```
-
-## Vale API key
-
-Kui `X-API-Key` puudub või on vale:
-
-```json
-{
-  "error": "unauthorized"
-}
-```
-
-HTTP status:
-
-`401`
-
----
-
-# Töö aegumine
-
-Töö ei tohi jääda serverisse lõputult ootama.
-
-Praegune töö kehtivusaeg on:
-
-```text
-30 sekundit
-```
-
-Serveris:
-
-```text
-JOB_TTL_SECONDS = 30
-```
-
-Kui Atom pollib pärast seda, kui töö on olnud serveris kauem kui 30 sekundit:
-
-- töö staatuseks saab `expired`;
-- tööd Atomile ei saadeta;
-- robot ei hakka aegunud töö tõttu liikuma;
-- `/api/poll` vastab:
-
-```json
-{
-  "msg": null
-}
-```
-
-See takistab olukorda, kus robot hakkaks pärast pikemat offline perioodi täitma vana käsku.
-
----
-
-# POST /api/result
-
-## Kasutaja
-
-Atom.
-
-## Eesmärk
-
-Atom saadab serverile töö tulemuse pärast töö lõpetamist.
-
-## Authentication
-
-Vajalik HTTP header:
-
-```text
-X-API-Key: <ATOM_API_KEY>
-```
-
-## Request
-
-HTTP method:
-
-`POST`
-
-Content-Type:
-
-`application/json`
-
-Näide:
-
-```json
-{
-  "id": 1,
-  "result": "done"
-}
-```
-
-## Väljad
-
-### id
-
-Töö ID, mille Atom sai `/api/poll` vastusest.
-
-### result
-
-Töö tulemus.
-
-Lubatud väärtused:
-
-- `done`
-- `refused`
-- `error`
-
-## Edukas vastus
-
-```json
-{
-  "status": "ok"
-}
-```
-
-## Tundmatu töö ID
-
-Kui saadetud ID ei vasta viimasele serveris teadaolevale tööle:
-
-```json
-{
-  "error": "Unknown job"
-}
-```
-
-HTTP status:
-
-`400`
-
-## Vale result väärtus
-
-Kui `result` ei ole üks järgmistest:
-
-- `done`
-- `refused`
-- `error`
-
-vastab server:
-
-```json
-{
-  "error": "Invalid result"
-}
-```
-
-HTTP status:
-
-`400`
-
-## Kui serveris pole ühtegi tööd
-
-```json
-{
-  "error": "No job exists"
-}
-```
-
-HTTP status:
-
-`400`
-
----
-
-# GET /api/status
-
-## Kasutaja
-
-Veebileht.
-
-## Eesmärk
-
-Veebileht küsib serverilt:
-
-- kas Atom on ONLINE või OFFLINE;
-- millal Atom viimati serveriga ühendust võttis;
-- milline oli viimane töö;
-- mis on viimase töö staatus.
-
-## Request
-
-HTTP method:
-
-`GET`
-
-Request body puudub.
-
-## Näide vastusest
-
-```json
-{
-  "robot_status": "ONLINE",
-  "last_seen": "2026-10-23T09:14:30+03:00",
-  "last_job": {
-    "id": 1,
-    "job": "letter",
-    "arg": "A",
-    "status": "done"
-  }
-}
-```
-
----
-
-# ONLINE / OFFLINE loogika
-
-Server salvestab iga `/api/poll` päringu ajal aja:
-
-```text
-last_seen
-```
-
-Praegune timeout:
-
-```text
-10 sekundit
-```
-
-Serveris:
-
-```text
-ONLINE_TIMEOUT_SECONDS = 10
-```
-
-Kui Atom on viimase 10 sekundi jooksul serverit pollinud:
-
-```text
-ONLINE
-```
-
-Kui viimasest pollist on möödas rohkem kui 10 sekundit:
-
-```text
-OFFLINE
-```
-
-Kui Atom pole pärast serveri käivitamist veel kordagi pollinud:
-
-```text
-OFFLINE
-```
-
----
-
-# Töö staatused
-
-Töö võib serveris olla järgmistes staatustes.
-
-## waiting
-
-Töö on serverisse lisatud ja ootab, et Atom selle küsiks.
-
-## sent
-
-Atom küsis töö serverilt ja server andis selle välja.
-
-## done
-
-Robot täitis töö edukalt.
-
-## refused
-
-Töö tegemisest keelduti.
-
-Näiteks robot ei olnud lubatud või töö täitmine ei olnud ohutu.
-
-## error
-
-Töö täitmisel tekkis viga.
-
-## expired
-
-Töö aegus enne, kui Atom selle serverilt küsis.
-
-Aegunud tööd robotile ei saadeta.
-
----
-
-# Lubatud tööde põhimõte
-
-Serverist robotile saadetakse ainult eelnevalt defineeritud kõrgema taseme töid.
-
-Näiteks lubatud töö:
-
-```json
-{
-  "job": "letter",
-  "arg": "A"
-}
-```
-
-Server ei tohi saata robotile:
-
-- koordinaate;
-- otseseid liigutuskäske;
-- kiiruse käske;
-- käsku liikuda näiteks 10 mm vasakule;
-- pumba otsest ON/OFF juhtimist.
-
-Robotile saadetakse ainult selline töö, mille jaam oskab algusest lõpuni ise täita.
-
----
-
-# Authentication
-
-Atom kasutab serveriga suhtlemisel API key'd.
-
-HTTP header:
-
-```text
-X-API-Key
-```
-
-Server loeb võtme environment variable'ist:
-
-```text
-ATOM_API_KEY
-```
-
-API key:
-
-- ei ole `app.py` failis;
-- ei ole Git repos;
-- ei ole `server_api.md` failis;
-- ei saadeta kasutajale veebilehel.
-
-Näide lokaalsel Windows testimisel:
-
-```powershell
-$env:ATOM_API_KEY="SINU_VÕTI"
-```
-
-Pärast seda käivitatakse Flask samas terminalis:
-
-```powershell
-python app.py
-```
-
----
-
-# API kokkuvõte
-
-| Method | Endpoint | Kasutaja | Eesmärk |
-|---|---|---|---|
-| GET | `/` | Brauser | Avab juhtimislehe |
-| POST | `/api/jobs` | Veebileht | Lisab uue töö |
-| POST | `/api/poll` | Atom | Uuendab olekut ja küsib töö |
-| POST | `/api/result` | Atom | Saadab töö tulemuse |
-| GET | `/api/status` | Veebileht | Küsib roboti ja töö staatust |
-
----
-
-# Üldine andmevoog
-
-```text
-KASUTAJA / BRAUSER
-        |
-        | POST /api/jobs
-        v
-    FLASK SERVER
-        |
-        | töö jääb ootele
-        |
-        ^ POST /api/poll
-        |
-       ATOM
-        |
-        | töö
-        v
-       JAAM
-        |
-        v
-      MG400
-        |
-        | tulemus
-        v
-       ATOM
-        |
-        | POST /api/result
-        v
-    FLASK SERVER
-        |
-        ^ GET /api/status
-        |
-KASUTAJA / BRAUSER
-```
-
-Server ei loo ise ühendust Atomi ega robotiga.
-
-Atom võtab ise serveriga perioodiliselt ühendust.
-```
-
-## PNG pilditööd (24.10.2026)
-
-`show_image` ei kasuta enam eelmääratud pildinimesid.
-
-| Meetod | Tee | Sisu / vastus |
+| Saatja → saaja | Mida saadetakse | Milleks / vastus |
 |---|---|---|
-| POST | `/api/images` | Brauser saadab multipart-väljal `file` PNG; vastus HTTP 201 `{id, name, width, height}` |
-| GET | `/api/images` | Brauser saab `{images: [{id, name}]}` valiku täitmiseks |
-| GET | `/api/images/<id>/png` | Atom saadab `X-API-Key`; vastus `image/png`, vale võti 401, tundmatu ID 404 |
+| Kasutaja brauser → server | `GET /` | Server tagastab juhtimislehe HTML-i. |
+| Brauser → server | `POST /api/images`, PNG fail väljal `file` | Pildi üleslaadimine; server tagastab pildi ID. |
+| Brauser → server | `GET /api/images` ja `GET /api/images/<id>/preview` | Piltide valik ja valitud pildi eelvaade. |
+| Brauser → server | `POST /api/jobs`, `{job, arg}` | Kasutaja tellib töö; server tagastab `job_id`. |
+| Atom → server | `POST /api/poll`, API võti päises | Atom teatab oma kohalolekust ja küsib järgmist tööd. |
+| Server → Atom | Polli HTTP-vastus `{msg, job, arg}` või `{msg:null}` | Üks ootel töö või teade, et tööd pole. Server ei algata ühendust. |
+| Atom → jaam | Tähetöö kohalikule `/api/letter` liidesele | Jaam võtab tähe vastu ja käivitab roboti töö. Täpne kohalik leping on allpool. |
+| Jaam → MG400 | Tähe joonistamiseks vajalikud liikumiskäsud | Jaam teisendab tähe punktideks ja juhib robotit kohalikus võrgus. |
+| Jaam → Atom | Kohalik `POST /api/result`, `{id, result}` | Jaam teatab tegeliku töö lõppemisest või veast. |
+| Atom → server | `POST /api/result`, `{id, result}`, API võti päises | Atom vahendab tulemuse avalikku serverisse. Pilditöö täidab Atom ise. |
+| Brauser → server | `GET /api/status` iga 2 sekundi järel | Server tagastab Atomi kohaloleku, viimase postilkäigu aja ja tööde tulemused. |
 
-Üleslaadimise piir on 1 MiB; lubatud on staatiline PNG kuni 2048 × 2048.
-Vigane pilt saab HTTP 400 ja `refused`, liiga suur päring HTTP 413.
-Server salvestab normaliseeritud 128 × 128 RGB PNG, säilitades proportsioonid
-ja kasutades musta tausta. ID on salvestatud faili SHA-256; sama pilt ei dubleeru.
-Pildid säilivad kettal restartide vahel, tööd on jätkuvalt RAM-is.
+Droplet ei saada robotile otse koordinaate, kiirusi ega pumba juhtimiskäske. Lubatud on ainult `letter` ja `show_image`. Kaameravood ei kuulu sellesse API-sse ning jäävad labori võrku.
 
-Töö loomine: `{"job":"show_image","arg":"<uploadist saadud id>"}`.
-Tundmatu pilt saab HTTP 400 ja `refused`.
-Poll-vastus:
+## Autentimine ja vorming
 
-```json
-{"msg":17,"job":"show_image","arg":"<id>","image_url":"/api/images/<id>/png"}
+JSON-päringud kasutavad `Content-Type: application/json`. PNG üleslaadimine kasutab `multipart/form-data` vormingut.
+
+Atom saadab `POST /api/poll`, `POST /api/result` ja `GET /api/images/<id>/png` päringutel päise:
+
+```text
+X-API-Key: <Atomi ja serveri ühine salajane võti>
 ```
 
-Atom ühendab suhtelise `image_url` tee enda seadistatud HTTPS serveri aadressiga,
-kasutab allalaadimisel sama API võtit ja kontrollib serveri TLS sertifikaati.
-API võtit URL-i ega brauserisse ei panda. Pärast PNG kuvamist saadab Atom
-`{"id":17,"result":"done"}`; vea korral `error` või mittetoetatud töö korral `refused`.
-Serveri osa on rakendatud; Atomi püsivara pole selles repos ja vajab ühendamist.
+Server loeb võtme keskkonnamuutujast `ATOM_API_KEY` (ka `.env` kaudu) ning keeldub käivitumast, kui võti puudub. Võtme tegelikku väärtust dokumenti, URL-i ega brauseri JavaScripti ei lisata. Puuduva või vale võtme vastus on HTTP 401 `{"error":"unauthorized"}`.
 
-Lubatud tööd pannakse FIFO järjekorda, tulemusi seostatakse töö ID-ga.
-Ootel töö aegub 30 sekundiga nii staatusepäringul kui pollimisel.
-`last_seen` on ISO 8601 ajatempel koos ajavööndi nihkega.
-Paigaldus: [deployment-and-verification.md](deployment-and-verification.md).
+Brauseri liidestel pole Flaski koodis API võtme kontrolli. Võimalik kasutaja sisselogimine tuleb seadistada pöördproksis; Atomi võti ei ole kasutaja parool. HTTPS-i avalikustamine on kirjeldatud [paigaldusjuhendis](deployment-and-verification.md).
 
-### Browser preview
+## Kasutaja tellib töö: POST /api/jobs
 
-`GET /api/images/<id>/preview` serves the same normalized 128 × 128 PNG
-for the selected image in the control page. Unknown IDs return HTTP 404.
-This browser route follows the control page's access policy and does not require
-the Atom API key; apply the same reverse-proxy login protection as the page.
-The Atom download route `/api/images/<id>/png` still requires `X-API-Key`.
+Brauser saadab näiteks:
+
+```json
+{"job":"letter","arg":"A"}
+```
+
+| Töö | `arg` | Täitja |
+|---|---|---|
+| `letter` | Üks täht A–Z; väiketäht teisendatakse suurtäheks. Numbrid (nii JSON arv `7` kui tekst `"7"`), mitu tähte, tühikud, kirjavahemärgid ja täpitähed ei sobi. Kontrollitakse algset ASCII sisendit enne suurtäheks teisendamist; `ı` ja `ſ` on samuti keelatud. | Jaam koos MG400-ga, Atomi vahendusel. |
+| `show_image` | Varem üles laaditud PNG 64 märgiga SHA-256 ID. | Atom kuvab pildi oma ekraanil. |
+
+Edukas vastus on HTTP 201:
+
+```json
+{"job_id":1,"status":"accepted"}
+```
+
+`accepted` kinnitab järjekorda lisamist. Töö salvestatud olek on `waiting`; see vastus ei kinnita roboti liikumist ega töö lõpetamist. Järjekord on FIFO ning igal tööl on oma ID.
+
+HTTP 400 keeldumised:
+
+| Olukord | Vastuse sisu |
+|---|---|
+| JSON ei ole objekt | `{"status":"refused","reason":"JSON object required"}` |
+| Tundmatu või keelatud töö | `{"status":"refused","reason":"Unknown or forbidden job"}` |
+| Vigane täht | `{"status":"refused","reason":"Letter must be A-Z"}` |
+| Tundmatu või vigane pildi ID | `{"status":"refused","reason":"Select an uploaded image"}` |
+
+Veebilehel on tähe jaoks A–Z rippmenüü. JavaScript kontrollib enne saatmist nii töö nime kui ka tähe väärtust; server teeb sõltumatu kontrolli ka otse API-sse saadetud päringutele.
+
+Keeldutud päring ei lisa järjekorda tööd ega saa töö ID-d. See ei muuda olemasolevat tööd, järjekorda ega järgmise töö ID loendurit. Poll ei väljasta keelatud sisendit. Varem vastu võetud lubatud töö võib endiselt täituda.
+
+Automaattestid katavad kõik 52 ASCII suur- ja väiketähte, kõik kümme numbrimärki, JSON arve ja muid tüüpe, vigaseid töö nimesid ning Unicode erijuhte. Tulemused ja füüsilise seadmekatse piir on kirjas [kontrollijuhendis](verification-and-latency.md).
+
+## Atom küsib tööd: POST /api/poll
+
+Atom algatab päringu oma seadistatud küsimisvahega ning lisab API võtme päise. Keha võib olla `{}`: server ei loe polli keha ega salvesta sealt näiteks `device` või `robot` välju. Praegu tähendab oleku saatmine autentitud kohalolekuteadet, mitte roboti valmisoleku või andurinäitude edastamist.
+
+Iga õige võtmega poll uuendab `last_seen` aega. Vale võtmega poll seda ei uuenda ega võta tööd järjekorrast.
+
+HTTP 200 vastus tähetööga:
+
+```json
+{"msg":1,"job":"letter","arg":"A"}
+```
+
+Pilditööga:
+
+```json
+{"msg":2,"job":"show_image","arg":"<pildi ID>","image_url":"/api/images/<pildi ID>/png"}
+```
+
+Töö puudumisel:
+
+```json
+{"msg":null}
+```
+
+`msg` on sama töö ID, mille brauser sai väljal `job_id`. Polliga väljastatud töö saab oleku `sent` ning eemaldatakse ootejärjekorrast. Server ei saada seda järgmisel pollil automaatselt uuesti, ka juhul, kui eelmine HTTP-vastus võrgus kaotsi läks.
+
+## Pildi üleslaadimine ja allalaadimine
+
+| Saatja | Päring | Edukas vastus |
+|---|---|---|
+| Brauser | `POST /api/images`, multipart-väli `file` | HTTP 201 `{"id":"<64 märgiga ID>","name":"<ID esimesed 12 märki>.png","width":128,"height":128}` |
+| Brauser | `GET /api/images` | HTTP 200 `{"images":[{"id":"<ID>","name":"<nimi>.png"}]}`; tühjal valikul `images:[]`. |
+| Brauser | `GET /api/images/<id>/preview` | HTTP 200, `image/png`. |
+| Atom, API võtmega | `GET /api/images/<id>/png` | HTTP 200, `image/png`. |
+
+Üleslaaditav pilt peab olema staatiline PNG kuni 1 MiB, mõõtmetega 1–2048 pikslit kummaski suunas. Server mahutab pildi proportsioone säilitades 128 × 128 mustale RGB taustale. ID on salvestatud PNG SHA-256 räsi. Pildid säilivad `Server/instance/images` all või `IMAGE_DIR` määratud kaustas.
+
+Puuduv fail saab HTTP 400 `{"status":"refused","reason":"PNG file required in field file"}`. Vigane formaat või mõõtmed annavad HTTP 400 `{"status":"refused","reason":"Invalid PNG; use a static PNG up to 2048 x 2048"}`. Liiga suur fail või päring annab HTTP 413 `{"status":"refused","reason":"PNG upload limit is 1 MiB"}`. Tundmatu eelvaate või allalaadimise ID vastus on HTTP 404 `{"error":"Unknown image"}`. Allalaadimisel kontrollitakse esmalt API võtit.
+
+Atom peab liitma polli `image_url` tee avaliku serveri baas-URL-iga, kasutama HTTPS-i ja saatma API võtme päises. `done` tuleb saata alles pärast pildi edukat kuvamist. See kirjeldab püsivarale vajalikku lepingut; pildi kuvamise teostus ja seadmekatse pole selles repos kinnitatud.
+
+## Atom saadab tulemuse: POST /api/result
+
+Atom lisab API võtme päise ning saadab:
+
+```json
+{"id":1,"result":"done"}
+```
+
+`id` peab olema JSON täisarv ja vastama serveris teadaolevale, juba väljastatud tööle. See võib olla ka varasem töö, mitte ainult viimane töö.
+
+| `result` | Tähendus |
+|---|---|
+| `Atom Accepted` | Vahekinnitus: Atom on töö vastu võtnud või edasi andnud; töö pole veel lõpetatud. |
+| `done` | Täitja teatab õnnestumisest: täht on joonistatud või pilt kuvatud. |
+| `refused` | Täitja keeldus tööst. |
+| `error` | Täitja teatab töö veast. |
+
+HTTP 200 vastus on `{"status":"ok"}`. Server talletab saadetud tulemuse ega kontrolli ise roboti füüsilist tegevust.
+
+| HTTP | `error` | Põhjus |
+|---|---|---|
+| 400 | `Invalid job ID` | Keha pole JSON-objekt või `id` pole täisarv. |
+| 400 | `Invalid result` | Tulemus pole üks ülaltoodud neljast väärtusest. |
+| 400 | `Unknown job` | ID-d pole serveri töömälus. |
+| 409 | `Job has not been dispatched` | Töö on veel `waiting`. |
+| 409 | `Conflicting final result` | Lõppenud tööle saadeti varasemast erinev lõpptulemus. |
+
+Sama lõpptulemuse kordussaatmine saab HTTP 200. Hiline `Atom Accepted` saab samuti HTTP 200 ning ei kirjuta lõpptulemust üle. `expired` on serveri määratud olek: Atom ei saa seda tulemuse väärtusena saata.
+
+## Brauser loeb olekut: GET /api/status
+
+Brauser saadab kehata GET-päringu iga 2 sekundi järel. HTTP 200 näide:
+
+```json
+{
+  "robot_status":"ONLINE",
+  "last_seen":"2026-10-24T14:00:00+03:00",
+  "last_job":{"id":1,"job":"letter","arg":"A","status":"done"},
+  "queue_length":0,
+  "jobs":[{"id":1,"job":"letter","arg":"A","status":"done"}]
+}
+```
+
+- `robot_status` näitab nimele vaatamata **Atomi pollimise värskust**, mitte MG400 ühendust või liikumisvalmidust. `ONLINE` tähendab, et autentitud pollist on möödas kuni 10 sekundit; muidu `OFFLINE`.
+- `last_seen` on viimase autentitud polli ISO 8601 ajatempel koos serveri ajavööndi nihkega. Veebileht kuvab selle Tallinna ajas. Enne esimest polli on väärtus `null`; Atomi vaikimisel säilib viimane aeg.
+- `last_job` on viimati loodud töö või `null`, kui töid pole loodud.
+- `queue_length` on ootel, veel väljastamata tööde arv.
+- `jobs` sisaldab kuni 50 viimati loodud töö ID-d, tüüpi, argumenti ja olekut. Enne esimest tööd on see `[]`.
+
+Töö olekud on `waiting`, `sent`, `Atom Accepted`, `done`, `refused`, `error` ja `expired`. Brauseri `SERVER ERROR` on lehe enda teade ebaõnnestunud staatusepäringu kohta, mitte serveri tagastatav tööolek.
+
+## Aegumine ja ühenduse katkestus
+
+Server kontrollib ootel tööde vanust töö loomisel, pollimisel ja staatusepäringul. Vähemalt 30 sekundit vana ootel töö saab `expired` oleku ning seda Atomile ei anta. Kui järjekorras on ka värskem töö, võib poll tagastada selle; ainult aegunud tööde korral tagastatakse `msg:null`.
+
+Juba väljastatud töö serveris ei aegu. Poll-vastus ei sisalda loomisaega ega aegumistähtaega, mistõttu serveri kontroll üksi ei taga, et jaama järjekorras kaua seisnud töö ei alusta hiljem liikumist.
+
+Tulemuse saatja peab katkenud ühenduse korral hoidma saatmata lõpptulemust koos sama ID-ga ja proovima uuesti kuni HTTP 200 vastuseni. Server lubab väljastatud töö hilise ja korduva tulemuse. Atomi kordussaatmist kirjeldab [kontrollijuhend](verification-and-latency.md); selle tegelik toimimine kogu ahelas vajab seadmekatset.
+
+Tööd, ID loendur ja `last_seen` on serveri RAM-is. Serveri restart kustutab need ning alustab ID-de loendamist uuesti. Restartide ülene tööde taastamine ja vanade tulemuste eristamine uutest sama ID-ga töödest pole teostatud. Kettale salvestatud PNG pildid säilivad.
+
+## Kohalik Atom–jaam–robot leping
+
+Selle repo serverikood katab brauseri ja Atomi avaliku API. Atomi ja MG400 jaama lähtekood asub eraldi projektides: [Atomi projekt](../firmware/README.md) ning [jaama kirjeldus](../../Lab1/docs/letter_writer.md). Järgnev on integratsioonile vajalik leping, mitte siin kontrollitud kohaliku API täielik spetsifikatsioon.
+
+1. Atom annab `letter` töö kohalikule jaama `POST /api/letter` liidesele. Täht on `letter` väljal, näiteks `{"letter":"A"}`. Avaliku töö ID peab jõudma jaamani ja sealt lõpetamise teates muutumatult tagasi; ID täpne väli jaamasuunalises päringus vajab jaama lähtekoodiga kinnitamist.
+2. Jaam peab tagastama kiiresti vastuvõtukinnituse ning täitma töö iseseisvalt. Vastuvõtukinnitus ei tähenda joonistamise lõppu. Kontrollijuhendi järgi ootab Atom jaama HTTP-vastust kuni 3 sekundit.
+3. Jaam saadab robotile tähe punktidest arvutatud liikumiskäsud ja jälgib töö lõppemist. MG400 ei kutsu avalikku serveri API-t.
+4. Jaam saadab Atomi kohalikule `POST /api/result` liidesele `{"id":1,"result":"done"}` või `error`. Atom vahendab sama ID ja tulemuse avaliku serveri `/api/result` liidesele.
+5. Kontrollijuhendis nõutakse, et jaam kordaks lõpptulemust kuni Atomi HTTP 200 vastuseni; Atom peaks vastama 503, kuni avalik server on tulemuse kinnitanud. Kohaliku autentimise ja muude vastuste täpne teostus vajab püsivara ja jaama koodist kinnitamist.
+
+`show_image` töö jääb Atomile ega vaja MG400 liigutamist. Nõutud tööde ID sidumine, roboti tegelik lõpetamine ja katkestusest taastumine tuleb üle kontrollida [seadmekatsetega](verification-and-latency.md).

@@ -1,5 +1,21 @@
 ## Nutikad Lahendused: Labor 2 — Server internetis ja kaks kaamerat
 
+## Esitatud tööfailid
+
+- [Arenduspäevik](Arenduspäevik.md)
+- [Veebiserver](Server/) ja [teenusefail](Server/robot-postoffice.service)
+- [Serveri API](Docs/server_api.md)
+- [Dropleti algseadistus](Docs/server_setup.md)
+- [Flask ja Caddy](Docs/flask-caddy-deployment.md)
+- [Paigaldamine ja kontroll](Docs/deployment-and-verification.md)
+- [Tööde salvestus ja pollimine](Docs/job-storage-and-atom-polling_info.md)
+- [Katsete ja latentsuse juhend](Docs/verification-and-latency.md)
+- [Lab2 mõõtetabel](Docs/lab2_latency.csv) ja [Lab1 võrdlustabel](Docs/lab1_latency.csv)
+- [Jaama kood ja analüüsitööriist](src/README.md)
+- [Atomi püsivara asukoht](firmware/README.md)
+
+Dokumentatsioon ja mõõtetabelid on `Docs/` all, veebiserver `Server/` all. Allolev laborijuhend on säilitatud; mõõtetabelite tühjad väljad on mõõtmata tulemused.
+
 **Töömaht:** 28 tundi | **Hindamine:** 20 punkti | **Meeskond:** 3 tudengit | **Välja antud:** 07.10.26 | **Tellimise kuupäev:** 16.10.26 | **Esimene kaitsmine:** 27.10.26, veebis
 
 ### Kuidas see dokument töötab
@@ -54,14 +70,14 @@ Esimesel päeval uusi osi ei ole. Ehita sellest, mis riiulil on, ja kirjuta puud
 - [ ] Latentsus mõõdetud: 30 sõnumit kasutaja vajutusest roboti esimese liigutuseni, kahe erineva küsimisvahega.
 - [ ] Ühendus katkestatud keset tööd: robot teeb töö lõpuni ja vastus jõuab kohale, kui ühendus tagasi tuleb.
 - [ ] Atom on vait: leht näitab, millal ta viimati postil käis. Läbi proovitud Atomi vooluta jätmisega.
-- [ ] Kes mida saadab, kirjas failis `docs/server_api.md`.
+- [ ] Kes mida saadab, kirjas failis `Docs/server_api.md`.
 - [ ] Ohutuskokkulepe kirjas ja kõigil meeskonnaliikmetel loetud.
 - [ ] Laua kaamera näitab kogu lauda: ruudustik servast servani ja robot.
 - [ ] Tööriista kaamera näitab otsikut ja detaili selle all.
 - [ ] Mõlemad pildid on jaama lehel, labori võrgus.
 - [ ] Mõlema kaamera viide, kaadrisagedus ja ribalaius mõõdetud; roboti juhtimise latentsus mõõdetud uuesti, mõlema kaamera töötamise ajal.
-- [ ] Rõhuanduri seaded ja testinupp Atomi lehel, `docs/atom_page.md` uuendatud.
-- [ ] Tellimus 16.10 failis `docs/bom.md`.
+- [ ] Rõhuanduri seaded ja testinupp Atomi lehel, `Docs/atom_page.md` uuendatud.
+- [ ] Tellimus 16.10 failis `Docs/bom.md`.
 - [ ] Repo ja arenduspäevik täidetud, tag `smart-solutions-lab2`.
 
 **KAARDISTA ISE — kuupäevad ja sinu enda sammud.**
@@ -190,7 +206,7 @@ kui sõnum: kas töö on nimekirjas? kas sõnum on piisavalt värske? kas robot 
 kui server ei vasta: proovi uuesti pikema vahega, ekraanil märk, et ühendust ei ole
 ```
 
-See on näide, mitte ettekirjutus. Formaadi lepid ise kokku ja kirjutad faili `docs/server_api.md`: iga aadress, kes seda kutsub, mis sisse läheb ja mis välja tuleb.
+See on näide, mitte ettekirjutus. Formaadi lepid ise kokku ja kirjutad faili `Docs/server_api.md`: iga aadress, kes seda kutsub, mis sisse läheb ja mis välja tuleb.
 
 Neli asja ei ole vabatahtlikud.
 
@@ -210,7 +226,7 @@ Siis kaks katkestust, ja nad on erinevad.
 
 **Atom jääb vait.** WiFi kukub, keegi tõmbab kaabli välja. Postkontor ei saa sellest teada — keegi ei ütle talle. Ta saab ainult märgata, et keegi ei käi enam postil. Otsusta, kui kaua on "liiga kaua", ja mida kasutaja siis lehel näeb. Leht, mis võtab sõnumi vastu ja vaikib, kuigi robot ei ole kümme minutit kohal käinud, valetab. Tõmba Atom vooluta ja vaata, kas leht läks ausaks.
 
-Kirjuta üles: lehe aadress; `docs/server_api.md`; lubatud tööde nimekiri ja mis juhtub sõnumiga, mida seal ei ole; kui vana sõnum veel kehtib ja mis juhtus aegunud sõnumiga; ekraanipilt telefonist, kus on näha, et WiFi on väljas; latentsuse tabel kahe küsimisvahega, keskmine ja maksimum, postilkäike tunnis, Labori 1 number kõrval; mis juhtus, kui ühendus kadus keset tööd; mida leht näitab, kui Atom on vait, ja mitme sekundi pärast.
+Kirjuta üles: lehe aadress; `Docs/server_api.md`; lubatud tööde nimekiri ja mis juhtub sõnumiga, mida seal ei ole; kui vana sõnum veel kehtib ja mis juhtus aegunud sõnumiga; ekraanipilt telefonist, kus on näha, et WiFi on väljas; latentsuse tabel kahe küsimisvahega, keskmine ja maksimum, postilkäike tunnis, Labori 1 number kõrval; mis juhtus, kui ühendus kadus keset tööd; mida leht näitab, kui Atom on vait, ja mitme sekundi pärast.
 
 #### 3. Kaamerad ja Atomi leht
 
@@ -228,7 +244,7 @@ Mõõda kummagi kaamera kohta kolm asja: kui palju aega jääb sündmuse ja sell
 
 Atomi leht: Labori 1 lubadus. Andmehõive Labor 2 pani Atomi külge rõhuanduri koos astmega. Sellele lehele tulevad nüüd juurde anduri seaded — kalibratsioonikonstandid, mis Andmehõives välja tulid — ja testinupp, mis näitab korraga toorest ADC lugemit, pinget ja kPa. Kolm numbrit kõrvuti sellepärast, et kui üks neist on vale, näed sa kohe, kumb pool valesti on: andur või valem. Samale lehele lähevad serveri aadress, Atomi võti ja küsimisvahe, ja testinupp, mis teeb ühe kõne ja näitab, mida server vastas. Uut lehte ei tehta.
 
-Kirjuta üles: üks pilt kummastki kaamerast samal hetkel; kummagi lahutus, viide millisekundites, kaadreid sekundis, ribalaius; juhtimise latentsus ilma kaamerateta, ühega ja kahega; kuidas tööriista kaamera pilt jaamani jõuab; Atomi lehe seadete ja testide nimekiri failis `docs/atom_page.md`.
+Kirjuta üles: üks pilt kummastki kaamerast samal hetkel; kummagi lahutus, viide millisekundites, kaadreid sekundis, ribalaius; juhtimise latentsus ilma kaamerateta, ühega ja kahega; kuidas tööriista kaamera pilt jaamani jõuab; Atomi lehe seadete ja testide nimekiri failis `Docs/atom_page.md`.
 
 **KAARDISTA ISE — vastused.** Iga osa kohta: numbrid, ühikud, kus fail on. Tegemata asja kohta üks rida, miks.
 
@@ -253,9 +269,9 @@ Selles laboris muutub ohutus teistsuguseks, kui ta seni oli. Seni pani roboti li
 
 Droplet ja link tulevad õppejõult. Neid sa oma tellimusse ei pane.
 
-Sinu tellimusse läheb see, mis laua juures puudu on. Tellimus läheb välja 16.10.26, faili `docs/bom.md`, iga rea juures üks lause, milline osa seda küsib.
+Sinu tellimusse läheb see, mis laua juures puudu on. Tellimus läheb välja 16.10.26, faili `Docs/bom.md`, iga rea juures üks lause, milline osa seda küsib.
 
-Tellimine käib ühisest tellimistabelist: [https://moodle.ut.ee/mod/url/view.php?id=1535601](https://moodle.ut.ee/mod/url/view.php?id=1535601). Kanna oma read sinna enne tellimise kuupäeva; mida tabelis ei ole, seda ei tellita. Fail `docs/bom.md` jääb sinu reposse põhjenduseks, miks sa just neid asju küsisid.
+Tellimine käib ühisest tellimistabelist: [https://moodle.ut.ee/mod/url/view.php?id=1535601](https://moodle.ut.ee/mod/url/view.php?id=1535601). Kanna oma read sinna enne tellimise kuupäeva; mida tabelis ei ole, seda ei tellita. Fail `Docs/bom.md` jääb sinu reposse põhjenduseks, miks sa just neid asju küsisid.
 
 Mõtle näiteks: kas veebikaamera näeb piisavalt laia kaadrit sellelt kõrguselt, kuhu post ta viib; kas USB kaabel ulatub posti otsast jaamani; ja kas kaameramoodul on olemas ning kas labori WiFi ulatub temani ja Atomini, kui nad on laua peal ja käe otsas.
 
@@ -277,10 +293,10 @@ Kaitsmine on lihtne suuline 15 minuti jutuajamine. Avad oma telefonist mobiilse 
 
 Repos on kaustas `smart-solutions/lab2/`:
 
-* `server/` dropletis jooksev veebiserver
+* `Server/` dropletis jooksev veebiserver
 * `src/` jaama kood koos kaamerate voogudega
 * `firmware/` Atomi PlatformIO projekt postilkäimise ja uuendatud lehega
-* `docs/`: dropleti ehitus samm-sammult, ahela skeem draw.io-s, `server_api.md`, `atom_page.md`, ohutuskokkulepe, latentsuse CSV-d, ekraanipildid ja fotod, `bom.md`
+* `Docs/`: dropleti ehitus samm-sammult, ahela skeem draw.io-s, `server_api.md`, `atom_page.md`, ohutuskokkulepe, latentsuse CSV-d, ekraanipildid ja fotod, `bom.md`
 * `README.md` selle labori kohta
 * `AGENTS.md` uuendatud
 
@@ -308,3 +324,9 @@ Repos on kaustas `smart-solutions/lab2/`:
 * Mida järgmine labor peaks enne alustamist teadma:
 
 ### Tagasiside
+
+### Lubatud tööd ja tähe sisend — 24.10.2026
+
+Lubatud tööde nimekiri on `letter` ja `show_image`. Tähetöö lubab ühe ASCII tähe A–Z või a–z; numbrid ja muud märgid lükatakse tagasi. Veebilehel on A–Z rippmenüü. Server kontrollib ka otse API-sse saadetud päringuid ning keelatud sisend ei jõua Atomi tööjärjekorda. Pilditöö kasutab üles laaditud PNG ID-d, mille numbrid on lubatud.
+
+[API ja näited](Docs/server_api.md), [testitulemused ja seadmekatse](Docs/verification-and-latency.md). Serveri 12 automaattesti läbisid; füüsilist robotikatset sellega tehtuks ei märgita.

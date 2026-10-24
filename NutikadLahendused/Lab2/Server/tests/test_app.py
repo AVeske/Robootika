@@ -126,6 +126,32 @@ class ApiTests(unittest.TestCase):
                 self.assertIsNone(self.poll().json["msg"])
         self.assertEqual(len(server.jobs), 0)
 
+    def test_only_ascii_letters_are_accepted(self):
+        for letter in "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz":
+            with self.subTest(letter=letter):
+                self.assertEqual(self.create(arg=letter).status_code, 201)
+                self.assertEqual(self.poll().json["arg"], letter.upper())
+        self.assertIsNone(self.poll().json["msg"])
+
+    def test_invalid_input_preserves_pending_work(self):
+        accepted_id = self.create(arg="B").json["job_id"]
+        invalid = list("0123456789") + [0, 7, 1.5, True, None, [], {},
+            "", "AB", "A1", " A", "A ", "A\n", "!", "õ", "Ä", "ß", "ı", "ſ", "１", "😀"]
+        payloads = [{"job": "letter", "arg": arg} for arg in invalid]
+        payloads += [{"job": job, "arg": "A"} for job in
+                     ("unknown", "move", "LETTER", "", None, 7, [], {})]
+        payloads += [None, [], "A", 7, {}, {"job": "letter"}]
+        for payload in payloads:
+            with self.subTest(payload=payload):
+                response = self.client.post("/api/jobs", json=payload)
+                self.assertEqual(response.status_code, 400)
+                self.assertEqual(response.json["status"], "refused")
+                self.assertEqual(list(server.pending_jobs), [accepted_id])
+                self.assertEqual(list(server.jobs), [accepted_id])
+                self.assertEqual(server.next_job_id, 2)
+        self.assertEqual(self.poll().json["msg"], accepted_id)
+        self.assertIsNone(self.poll().json["msg"])
+
     def test_poll_expires_old_job_without_status_request(self):
         old_id = self.create().json["job_id"]
         fresh_id = self.create("letter", "B").json["job_id"]
