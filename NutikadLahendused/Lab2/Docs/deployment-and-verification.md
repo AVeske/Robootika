@@ -1,49 +1,94 @@
 # Seitsme sammu kontroll
 
-## 1. Automaatkäivitus Ubuntu dropletis
+## 1. Server töötab ka pärast SSH sulgemist
 
-Need käsud tuleb käivitada dropletis, kuhu uuendatud repo on toodud.
-Teenuse rajad järgivad olemasolevat `/root/Robootika` paigaldust.
-Kui repo asub mujal, muuda teenuse WorkingDirectory ja ExecStart radu.
-Teenusel on senise root-paigalduse õigused; eraldi teenusekasutajale
-üleminekul tuleb projekt viia näiteks /opt alla ja lisada User=.
+`python app.py` töötab SSH-terminali protsessina ja võib ühenduse sulgemisel
+peatuda. Püsivaks käivitamiseks kasuta `systemd` teenust `robot-postoffice`.
+Teenust haldab Ubuntu, nii et SSH võib sulgeda. Teenus käivitub rebooti järel
+ning protsessi väljumisel käivitatakse see 3 sekundi pärast uuesti.
+`systemctl stop robot-postoffice` peatab teenuse siiski tahtlikult.
+
+### Paigaldamine või olemasoleva teenuse uuendamine
+
+Käivita järgmised käsud **dropletis**, mitte kohalikus Windowsi terminalis.
+Too repo muudatused enne serverisse. Näites on repo `/root/Robootika` all;
+muu asukoha puhul muuda teenusefailis WorkingDirectory ja ExecStart radu.
 
 ```bash
 cd /root/Robootika/NutikadLahendused/Lab2/Server
 python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
-sudo install -m 600 /dev/null /etc/robot-postoffice.env
+```
+
+Võti peab olema kas `Server/.env` failis või `/etc/robot-postoffice.env` failis:
+
+```text
+ATOM_API_KEY=sinu-tegelik-võti
+```
+
+Olemasolev `Server/.env` sobib: rakendus loeb seda ise. Kui võti on mõlemas
+failis, on teenuse `/etc/robot-postoffice.env` väärtus eelistatud. Ära loo
+võtmele uut väärtust, kui Atom juba kasutab olemasolevat võtit.
+Vajadusel loo teenuse seadistusfail olemasolevat faili tühjendamata:
+
+```bash
+sudo touch /etc/robot-postoffice.env
+sudo chmod 600 /etc/robot-postoffice.env
 sudo nano /etc/robot-postoffice.env
 ```
 
-Viimasesse faili kirjuta `ATOM_API_KEY=sinu-tegelik-võti`.
-Kui fail juba eksisteerib, jäta `install ... /dev/null` käsk vahele,
-et olemasolevat võtit mitte kustutada. Võti peab ühtima Atomi seadistusega.
-Peata enne teenuse käivitamist vana käsitsi käivitatud Flask, kui see kasutab porti 5000.
+Kui samas SSH-terminalis töötab praegu Flask, peata see Ctrl+C abil.
+Kui teenus teatab hõivatud pordist, kontrolli `sudo ss -ltnp 'sport = :5000'`
+abil, milline protsess seda kasutab; peata konkreetne vana serveriprotsess.
 
 ```bash
-sudo cp robot-postoffice.service /etc/systemd/system/
+sudo cp robot-postoffice.service /etc/systemd/system/robot-postoffice.service
 sudo systemctl daemon-reload
-sudo systemctl enable --now robot-postoffice
-sudo systemctl status robot-postoffice
-curl http://127.0.0.1:5000/api/status
-sudo journalctl -u robot-postoffice -n 50 --no-pager
+sudo systemctl enable robot-postoffice
+sudo systemctl restart robot-postoffice
+sudo systemctl enable --now caddy
+sudo systemctl status robot-postoffice --no-pager
+curl --fail http://127.0.0.1:5000/api/status
+curl --fail https://narva1.roboarena.org/api/status
 ```
 
 Caddy olemasolev `reverse_proxy 127.0.0.1:5000` sobib teenusega.
-Kasuta täpselt ühte Gunicorni worker'it ja ühte thread'i: tööde olek on RAM-is.
-Restardiga kaovad tööd ja last_seen; vana töö ei lühe uuesti täitmisele.
+Gunicorn kasutab ühte worker'it ja ühte thread'i, sest tööde olek on RAM-is.
+Teenusel on praeguse root-paigalduse õigused. Eraldi teenusekasutajale
+üleminekul vii projekt näiteks /opt alla ja määra teenuses User=.
 
-Rebooti katse (katkestab serveri ühendused): `sudo reboot`.
-Pärast uuesti ühendamist kontrolli:
+### Kontroll pärast SSH sulgemist
+
+1. Veendu, et mõlemad curl-kontrollid õnnestusid.
+2. Sulge SSH `exit` käsuga.
+3. Ava veebileht telefonis mobiilse andmesidega ja värskenda seda.
+   Leht peab endiselt avanema. Kui Atom on väljas, on OFFLINE õige tulemus:
+   see kirjeldab Atomi ühendust, mitte veebiserveri tööd.
+4. Ühendu SSH-ga uuesti ja kontrolli:
 
 ```bash
 systemctl is-enabled robot-postoffice
 systemctl is-active robot-postoffice
-curl https://narva1.roboarena.org/api/status
+systemctl is-enabled caddy
+systemctl is-active caddy
+```
+
+Oodatavad vastused on enabled ja active. Rebooti katseks kasuta sobival
+hetkel `sudo reboot`, oota serveri taastumist ning korda lehe ja teenuste kontrolli.
+SSH seansi sulgemine teenust ei restardi. Serveri tegelikul restardil kaovad
+RAM-is hoitud tööd ning last_seen; kettale salvestatud pildid säilivad.
+
+Vea korral:
+
+```bash
+sudo journalctl -u robot-postoffice -n 80 --no-pager
+sudo journalctl -u caddy -n 50 --no-pager
 ```
 
 Koodi uuendamise järel: `sudo systemctl restart robot-postoffice`.
+Teenusefaili muutmisel kopeeri see uuesti /etc/systemd/system alla ja tee
+`daemon-reload`, seejärel restart. Teenus ei taga kättesaadavust dropleti,
+DNS-i või võrgu rikke ajal, kuid ei sõltu avatud SSH-terminalist.
 
 ## 2–4. Kaks tööd
 
