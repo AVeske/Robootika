@@ -77,6 +77,16 @@ def images():
     return jsonify(id=image_id, name=image_id[:12] + ".png", width=128, height=128), 201
 
 
+@app.route("/api/images/<image_id>/preview")
+def preview_image(image_id):
+    # Browser access follows the control page's access policy (e.g. Caddy auth).
+    # The Atom key stays out of browser JavaScript and image URLs.
+    path = image_path(image_id)
+    if path is None or not path.is_file():
+        return jsonify(error="Unknown image"), 404
+    return send_file(path, mimetype="image/png", conditional=True)
+
+
 @app.route("/api/images/<image_id>/png")
 def download_image(image_id):
     if request.headers.get("X-API-Key") != ATOM_API_KEY:

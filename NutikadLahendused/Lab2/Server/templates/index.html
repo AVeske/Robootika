@@ -87,6 +87,13 @@
     <div id="imageFields" hidden>
         <label for="image">Image:</label>
         <select id="image"><option value="">No uploaded images</option></select>
+        <figure id="imagePreviewBox" hidden>
+            <img id="imagePreview" width="128" height="128"
+                 alt="Selected image as it will appear on the Atom"
+                 style="background: black; border: 1px solid #ccc; max-width: 100%;">
+            <figcaption>Atom preview (128 × 128)</figcaption>
+        </figure>
+        <p id="imagePreviewError" role="status"></p>
         <p>Upload a PNG (up to 1 MiB). It will fit the 128 × 128 Atom screen.</p>
         <input id="imageFile" type="file" accept="image/png,.png">
         <button id="uploadImage" type="button">UPLOAD PNG</button>
@@ -139,10 +146,44 @@
 
 <script>
 
+const timestampFormat = new Intl.DateTimeFormat("et-EE", {
+    timeZone: "Europe/Tallinn",
+    day: "2-digit", month: "2-digit", year: "numeric",
+    hour: "2-digit", minute: "2-digit", second: "2-digit",
+    hourCycle: "h23"
+});
+
+function formatTimestamp(value) {
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "-";
+    const parts = Object.fromEntries(
+        timestampFormat.formatToParts(date).map(part => [part.type, part.value])
+    );
+    return `${parts.day}.${parts.month}.${parts.year} ${parts.hour}:${parts.minute}:${parts.second}`;
+}
+
+
 document.getElementById("jobType").addEventListener("change", (event) => {
     const isLetter = event.target.value === "letter";
     document.getElementById("letterFields").hidden = !isLetter;
     document.getElementById("imageFields").hidden = isLetter;
+});
+
+function updateImagePreview() {
+    const id = document.getElementById("image").value;
+    const preview = document.getElementById("imagePreview");
+    const box = document.getElementById("imagePreviewBox");
+    document.getElementById("imagePreviewError").textContent = "";
+    box.hidden = !id;
+    if (id) preview.src = "/api/images/" + encodeURIComponent(id) + "/preview";
+    else preview.removeAttribute("src");
+}
+
+document.getElementById("image").addEventListener("change", updateImagePreview);
+document.getElementById("imagePreview").addEventListener("error", () => {
+    if (!document.getElementById("image").value) return;
+    document.getElementById("imagePreviewBox").hidden = true;
+    document.getElementById("imagePreviewError").textContent = "Could not load image preview.";
 });
 
 async function loadImages(selectedId) {
@@ -157,6 +198,7 @@ async function loadImages(selectedId) {
     }
     if (!data.images.length) select.add(new Option("No uploaded images", ""));
     if (data.images.some(image => image.id === previous)) select.value = previous;
+    updateImagePreview();
 }
 
 document.getElementById("uploadImage").addEventListener("click", async () => {
@@ -261,7 +303,7 @@ async function updateStatus() {
         if (data.last_seen) {
 
             document.getElementById("lastSeen").innerText =
-                data.last_seen;
+                formatTimestamp(data.last_seen);
 
         } else {
 

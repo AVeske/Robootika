@@ -52,6 +52,11 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(downloaded.mimetype, "image/png")
         raw = downloaded.data
         downloaded.close()
+        preview = self.client.get("/api/images/" + image_id + "/preview")
+        self.assertEqual(preview.status_code, 200)
+        self.assertEqual(preview.mimetype, "image/png")
+        self.assertEqual(preview.data, raw)
+        preview.close()
         with Image.open(io.BytesIO(raw)) as image:
             self.assertEqual(image.size, (128, 128))
             self.assertEqual(image.mode, "RGB")
@@ -74,6 +79,10 @@ class ApiTests(unittest.TestCase):
         for arg in ("smile", "../secret", None, [], "f" * 64):
             self.assertEqual(self.create("show_image", arg).status_code, 400)
         self.assertEqual(self.client.get("/api/images/invalid/png", headers=self.headers).status_code, 404)
+
+    def test_unknown_preview(self):
+        for image_id in ("invalid", "f" * 64):
+            self.assertEqual(self.client.get("/api/images/" + image_id + "/preview").status_code, 404)
 
     def test_fifo_and_refusal(self):
         self.assertEqual(self.create().status_code, 201)

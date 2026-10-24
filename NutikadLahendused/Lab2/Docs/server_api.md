@@ -676,3 +676,11 @@ Lubatud tööd pannakse FIFO järjekorda, tulemusi seostatakse töö ID-ga.
 Ootel töö aegub 30 sekundiga nii staatusepäringul kui pollimisel.
 `last_seen` on ISO 8601 ajatempel koos ajavööndi nihkega.
 Paigaldus: [deployment-and-verification.md](deployment-and-verification.md).
+
+### Browser preview
+
+`GET /api/images/<id>/preview` serves the same normalized 128 × 128 PNG
+for the selected image in the control page. Unknown IDs return HTTP 404.
+This browser route follows the control page's access policy and does not require
+the Atom API key; apply the same reverse-proxy login protection as the page.
+The Atom download route `/api/images/<id>/png` still requires `X-API-Key`.
