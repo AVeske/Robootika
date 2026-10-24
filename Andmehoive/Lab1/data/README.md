@@ -156,7 +156,7 @@ Käsk: `python pump_controller.py suck raw t=60 ../../Lab1/data/l1_hold_glass.cs
 
 Mida see näitab:
 - **Haare on tihe.** 0,019 kPa/s juures jõuab rõhk −37 → −15 kPa umbes (37 − 15) / 0,019 ≈ 1170 s ≈ **20 minutiga**. Nii kaua pump ei käivitu.
-- **Pump on klaasil väga kiire:** −30 kPa tuleb 0,1 s jooksul. Riba −15 / −30 on klaasi jaoks laiaga piisav.
+- **Pump on klaasil väga kiire:** −30 kPa tuleb 0,1 s jooksul. Riba −15 / −30 on klaasi jaoks piisavalt lai.
 - **Pärast väljalülitust langeb rõhk veel 15 kPa** (−33 → −48,6). Seepärast hoitakse tegelikult −38 kPa, mitte −30.
 
 Lisaks (Labori 2 jaoks): samas logis op-ampi kanal: leke 0,016 kPa/s, müra hoidmisel **0,42 kPa** (toores 1,25 kPa) → umbes 3 korda väiksem müra.
