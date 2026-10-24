@@ -137,3 +137,26 @@ Mida see näitab:
 - Puudus: pump töötab õhus lõputult. Kui tahta pumpa säästa, võiks lisada piiri "kui X s jooksul −30 kPa ei tule, pump seisma". Praegu seda ei ole.
 
 Lisaks (Labori 2 jaoks): op-ampi kanal näitas samas logis −12,5 kPa, müra **1,03 kPa** (toores 1,52 kPa). `GAIN`/`OFFSET` on vanad, nii et see on esialgne number.
+
+## Oma kast: napp klaasil (`l1_hold_glass.csv`)
+
+Käsk: `python pump_controller.py suck raw t=60 ../../Lab1/data/l1_hold_glass.csv` (Lab2/src). Klaas napil tihedalt. Riba sama: käima −15 kPa, seisma −30 kPa.
+
+| Mis | Number |
+| :--- | :--- |
+| Rõhk enne pumpa | 1,0 kPa |
+| Pump käivitus | 0,94 s pärast |
+| **Pumba tööaeg** | **0,10 s** (üks rida 10 ms kohta → 10 rida) |
+| Rõhk väljalülitamisel | −33,1 kPa (piir −30, ületus ühe rea jooksul) |
+| Kõige madalam rõhk | **−48,6 kPa** 0,05 s pärast väljalülitust (pump veereb edasi) |
+| Rõhk hoidmisel | −38,5 kPa (1 s pärast) → −37,2 kPa (60 s lõpus) |
+| **Leke** | **0,019 kPa/s** |
+| **Käivitusi** | **1 kord 60 s jooksul** |
+| Müra hoidmisel (viimased 10 s) | 1,25 kPa |
+
+Mida see näitab:
+- **Haare on tihe.** 0,019 kPa/s juures jõuab rõhk −37 → −15 kPa umbes (37 − 15) / 0,019 ≈ 1170 s ≈ **20 minutiga**. Nii kaua pump ei käivitu.
+- **Pump on klaasil väga kiire:** −30 kPa tuleb 0,1 s jooksul. Riba −15 / −30 on klaasi jaoks laiaga piisav.
+- **Pärast väljalülitust langeb rõhk veel 15 kPa** (−33 → −48,6). Seepärast hoitakse tegelikult −38 kPa, mitte −30.
+
+Lisaks (Labori 2 jaoks): samas logis op-ampi kanal: leke 0,016 kPa/s, müra hoidmisel **0,42 kPa** (toores 1,25 kPa) → umbes 3 korda väiksem müra.
