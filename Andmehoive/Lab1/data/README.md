@@ -179,3 +179,20 @@ Mida see näitab:
 - **Puhumine ei hoia rõhku**, sest klaas tõuseb napilt ja õhk läheb välja. Rõhk on +30 kPa ainult hetke.
 - **Ilma piirideta oleks see lühitsükkel.** Seisuaja alampiir (1 s) ja käivituste piir (10 / min) töötasid: pärast 10. käivitust pump enam ei käivitunud.
 - **Järeldus `pump_control.md` jaoks:** puhumine ei ole "hoidmine", vaid ühekordne impulss klaasi lahti laskmiseks. Parem loogika: puhu kuni +30 kPa või kuni X s, siis `off`, ja ära käivita uuesti.
+
+## USB välja = pump välja (`l1_usb_pull.csv`)
+
+Käsk: `python pump_controller.py suck raw t=60 ../../Lab1/data/l1_usb_pull.csv` (Lab2/src). Napp õhus, et pump töötaks pidevalt. Töö ajal tõmmati Atomi USB välja.
+
+| Mis | Number |
+| :--- | :--- |
+| Pump käivitus | 0,95 s pärast |
+| Pump töötas enne USB väljatõmbamist | 2,88 s (rõhk −12,7 kPa) |
+| Viimane rida Atomist | 17:12:06,970 |
+| `off` saadetud ja API kinnitas (`pump_mode: off`, DO = 0) | enne 17:12:07,065 → **alla 0,1 s** |
+
+Mis juhtus: seriali lugemine andis vea (`SerialException`), programm läks `finally` plokki ja saatis pumbale `off`. Kui USB kaabel on terve, aga Atom vaikib, lülitab pumba välja 0,5 s ajapiir (`TIMEOUT_S`).
+
+✅ **Nõue "USB välja, pump välja" on täidetud.**
+
+Mida see ei kata: kui **arvuti ise** kukub või Pythoni protsess tapetakse, jääb MG400 DO liin üles ja pump töötab edasi. Selle vastu peaks ajapiir olema roboti või pumbakasti poolel.
