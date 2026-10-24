@@ -69,8 +69,12 @@ Tehtud skriptiga `Lab2/src/pump_controller.py`, sest Atom loeb seal mõlemat vii
 | Mis | Number | Nõue |
 | :--- | :--- | :--- |
 | Ridu 10 s kohta | 998 rida 9,96 s jooksul = 100,2 Hz → **1002 rida / 10 s** | 1000 ± 5 ✅ |
-| Pinge atmosfääris (ADC) | **0,818 V** | multimeetriga 2 % piires — **multimeetri number puudu** |
+| Pinge atmosfääris (ADC) | **0,818 V** | — |
+| Pinge atmosfääris (multimeeter, Vout) | **0,833 V** | — |
+| Vahe ADC vs multimeeter | 0,015 V = **1,8 %** (ADC näitab vähem) | ≤ 2 % ✅ |
 | Atmosfäär | 0,818–0,819 V → **96,2 kPa abs** (andmelehe valem, toide 5,0 V) | `ATM_KPA = 96.2` skriptides |
+
+Multimeetri järgi on atmosfäär 0,833 V → 98,5 kPa abs. Skriptid kasutavad ADC numbrit (96,2), sest pump otsustab ADC lugemi järgi ja nii on atmosfäär 0 kPa.
 
 ### Üks ADC samm
 
