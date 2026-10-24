@@ -126,3 +126,47 @@ python plot_result.py
 - `result.png` — `plot_result.py` tehtud graafik.
 
 Uue `result.csv` saab logist: võta `log.csv`-st sama `t_ms`-iga `opamp` ja `raw` read ja pane nende `volts` kõrvuti.
+
+## pick_web.py
+
+**Kus töötab:** arvutis. Veebileht aadressil `http://127.0.0.1:8010`.
+
+**Miks on vaja:** Labori 1 katse "robot võtab klaasi kümme korda". Robot viib napi klaasile, imeb, tõstab, viib teise kohta, puhub ja laseb lahti. Leht teeb seda ise ja kirjutab samal ajal logi (100 Hz, `raw` + `opamp`).
+
+**Enne käivitamist:**
+1. Ava MG400 leht (`http://127.0.0.1:8000`), ühenda ja luba robot (Connect, Enable).
+2. Vii robot nii, et napp **puudutab klaasi** esimeses kohas, ja salvesta see **slot 1**. Teine koht (kuhu klaas läheb) → **slot 2**. Salvesta asend, kus napp puudutab klaasi, mitte õhus.
+3. Klaas pane slot 1 kohale.
+
+**Käivitamine** (kaustas `Lab2/src`):
+
+```bash
+python pick_web.py ../../Lab1/data/l1_pick_10x.csv
+```
+
+Ava brauseris `http://127.0.0.1:8010`.
+
+**Nupud:**
+- **STOP** — robot seisma (`/api/stop`) ja pump välja. Vajuta, kui midagi läheb valesti.
+- **Imemine / Puhumine / Pump seis** — pump käsitsi.
+- **Slot 1 kohale / Slot 2 kohale** — robot läheb `LIFT_MM` (40 mm) kõrgusele slotti kohale.
+- **Auto: N haaret** — N tsüklit järjest.
+
+**Üks tsükkel:**
+1. slotti kohale 40 mm kõrgusele → alla klaasini;
+2. imemine, kuni rõhk jõuab −30 kPa (kui 5 s jooksul ei jõua → stopp, "no grip");
+3. tõstmine 40 mm, kontroll: rõhk peab olema alla −15 kPa (muidu → stopp, "glass lost");
+4. teise slotti kohale → alla;
+5. puhumine 0,5 s (üks impulss), pump välja → üles.
+
+Paaritu tsükkel viib klaasi 1 → 2, paaris 2 → 1, nii et klaas käib edasi-tagasi.
+
+Tabelis on iga tsükli kohta: mitu sekundit vaakum tuli, rõhk tõstes ja viies, tsükli aeg.
+
+**Ohutus:**
+- Esimene kord vaata, et robot liigub aeglaselt (MG400 lehel kiirus madal), käsi STOP nupu juures.
+- Kui Atomist ei tule 0,5 s andmeid, pump läheb välja ja automaat peatub.
+- Programmi lõpus (Ctrl+C) pump välja.
+- Imemise ajal hoiab leht riba −15 / −30 kPa, aga seisuaja alampiiri ja käivituste piiri siin ei ole: leht on mõeldud jälgitud katseks.
+
+Testitud simulaatoriga (vale Atom ja vale MG400 API): 10 / 10 tsüklit, STOP ja Atomi vaikimine töötavad. Päris robotiga ei ole veel proovitud.
