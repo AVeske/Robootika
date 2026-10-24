@@ -114,3 +114,47 @@ class ApiTests(unittest.TestCase):
         page = self.client.get("/").data
         self.assertIn(b'type="file"', page)
         self.assertIn(b'/api/images', page)
+
+    def test_rejected_jobs_never_reach_atom(self):
+        for job, arg in (("unknown", "A"), ("move", "10"), ("letter", "1"),
+                         ("letter", "AB"), ("letter", ""), ("letter", 7),
+                         ("letter", "ß"), ("letter", None)):
+            with self.subTest(job=job, arg=arg):
+                response = self.create(job, arg)
+                self.assertEqual(response.status_code, 400)
+                self.assertEqual(response.json["status"], "refused")
+                self.assertIsNone(self.poll().json["msg"])
+        self.assertEqual(len(server.jobs), 0)
+
+    def test_poll_expires_old_job_without_status_request(self):
+        old_id = self.create().json["job_id"]
+        fresh_id = self.create("letter", "B").json["job_id"]
+        server.jobs[old_id]["created_at"] -= timedelta(seconds=31)
+        self.assertEqual(self.poll().json["msg"], fresh_id)
+        self.assertEqual(server.jobs[old_id]["status"], "expired")
+        self.assertIsNone(self.poll().json["msg"])
+        response = self.client.post("/api/result", headers=self.headers,
+            json={"id": old_id, "result": "done"})
+        self.assertEqual(response.status_code, 409)
+
+    def test_dispatched_job_can_finish_after_long_outage(self):
+        job_id = self.create().json["job_id"]
+        self.assertEqual(self.poll().json["msg"], job_id)
+        server.jobs[job_id]["created_at"] -= timedelta(seconds=120)
+        server.last_seen -= timedelta(seconds=120)
+        status = self.client.get("/api/status").json
+        self.assertEqual(status["robot_status"], "OFFLINE")
+        self.assertEqual(status["last_job"]["status"], "sent")
+        # Simulate delivery after connectivity returns, including an HTTP retry.
+        for _ in range(2):
+            response = self.client.post("/api/result", headers=self.headers,
+                json={"id": job_id, "result": "done"})
+            self.assertEqual(response.status_code, 200)
+        self.assertEqual(server.jobs[job_id]["status"], "done")
+        self.assertIsNone(self.poll().json["msg"])
+
+    def test_unauthorized_poll_does_not_consume_job(self):
+        job_id = self.create().json["job_id"]
+        self.assertEqual(self.client.post("/api/poll").status_code, 401)
+        self.assertIsNone(server.last_seen)
+        self.assertEqual(self.poll().json["msg"], job_id)
