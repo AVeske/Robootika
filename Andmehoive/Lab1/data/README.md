@@ -117,3 +117,23 @@ Tippude nimed:
 **Kaks allikat on kontrollitud väljalülitamisega:** pumba mootor (tipp kaob) ja MG400 servod (muutust ei ole).
 
 Võrdlus 03.10 logiga (10 Hz): siis 9,6 LSB pump seisab, 16,2 LSB pump töötab. Nüüd 100 Hz juures 8,7 ja 12,0 LSB.
+
+## Oma kast: napp õhus (`l1_hold_air.csv`)
+
+Käsk: `python pump_controller.py suck raw t=60 ../../Lab1/data/l1_hold_air.csv` (Lab2/src). Napp robotil õhus, mitte midagi peal. Riba: pump käima nõrgemal kui −15 kPa, seisma −30 kPa juures, seisuaja alampiir 1 s, kuni 10 käivitust minutis.
+
+| Mis | Number |
+| :--- | :--- |
+| Kestus / sagedus | 60,0 s, 6004 rida, 100,1 Hz |
+| Rõhk enne pumpa | 0,15 kPa (atmosfäär ≈ 0 ✅) |
+| Pump käivitus | 0,95 s pärast (seisuaja alampiir 1 s) |
+| **Käivitusi** | **1 kord 60 s jooksul = 1 käivitus minutis** |
+| Pumba tööaeg | 59,0 s (98 %) |
+| Rõhk pumba töö ajal | **−12,8 kPa** (−17,7 … −7,4), müra 1,52 kPa / 11,5 LSB |
+
+Mida see näitab:
+- **Lühitsüklit ei ole.** Napp õhus ei jõua kunagi −30 kPa-ni, nii et pump töötab pidevalt ja ei käivitu iga sekund. Ülesande nõue "napp õhus ei tohi lühitsüklitesse minna" on täidetud.
+- **Õhus annab pump ainult umbes −13 kPa.** See on napi lahtise ava kaudu vooluga saavutatud rõhk.
+- Puudus: pump töötab õhus lõputult. Kui tahta pumpa säästa, võiks lisada piiri "kui X s jooksul −30 kPa ei tule, pump seisma". Praegu seda ei ole.
+
+Lisaks (Labori 2 jaoks): op-ampi kanal näitas samas logis −12,5 kPa, müra **1,03 kPa** (toores 1,52 kPa). `GAIN`/`OFFSET` on vanad, nii et see on esialgne number.
