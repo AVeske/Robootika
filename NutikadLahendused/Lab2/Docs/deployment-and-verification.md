@@ -48,21 +48,30 @@ Koodi uuendamise järel: `sudo systemctl restart robot-postoffice`.
 ## 2–4. Kaks tööd
 
 Veebilehe valikus on `letter` ja `show_image`.
-Letter võtab ühe märgi. Show_image võtab eelmääratud pildi nime:
-`smile`, `heart` või `checker`. Server ei laadi pilte ega URL-e alla.
-Atom peab need nimed seostama enda ekraanil olevate piltidega.
-Näidissisend: `{"job":"show_image","arg":"smile"}`.
-Atom saab poll-vastuse `{"msg":1,"job":"show_image","arg":"smile"}`
-ja saadab pärast täitmist `/api/result` päringu `{"id":1,"result":"done"}`.
-Letter antakse edasi Labori 1 jaama liidesele.
-Selles repos Atomi/jaama teostust ei ole; riistvaraga täitmine vajab eraldi kontrolli.
+Letter võtab ühe tähe A–Z. `show_image` kasutab veebilehel üles laaditud PNG pilti.
+Vali PNG ja vajuta UPLOAD PNG, seejärel SEND JOB. Varem üles laaditud
+pildid saab valida samast nimekirjast ka pärast serveri restarti.
+Server kontrollib faili sisu: staatiline PNG kuni 1 MiB ja 2048 × 2048 pikslit.
+Pilt skaleeritakse proportsionaalselt 128 × 128 mustale taustale.
+Pildid säilivad `Server/instance/images` kaustas, mida Git ei jälgi.
+Soovi korral määra `IMAGE_DIR` keskkonnamuutujaga teine kirjutatav kaust.
+Paigalda uuendatud requirements.txt (lisatud Pillow) ja taaskäivita teenus.
+
+`show_image` argumendiks on üleslaadimisel saadud pildi ID.
+Poll-vastuses on lisaks `image_url`, näiteks `/api/images/<id>/png`.
+Atom küsib selle tee samast HTTPS serverist, lisades `X-API-Key` päise,
+laeb PNG alla ja kuvab ekraanil. Alles pärast edukat kuvamist saadab
+`/api/result` kaudu `done`; allalaadimis- või kuvamisvea korral `error`.
+Allalaadimise ajal kadunud ühenduse puhul peab Atom proovima uuesti.
+Varem pakutud `smile`, `heart`, `checker` nimed enam ei kehti.
+Selles repos Atomi/jaama lähtekoodi ei ole: allalaadimine ja kuvamine
+vajavad Atomi püsivara muudatust ning seadmega katsetamist.
 
 ## 5. Unknown job → refused
 
 Saada `/api/jobs` JSON `{"job":"unknown","arg":null}`.
 Oodatav: HTTP 400, `status: refused`; olemasolev töö jääb alles.
-Vigane argument saab samuti refused. Kui eelmine töö ootab või on saadetud,
-saab uus lubatud töö HTTP 409 ja refused, et eelmine töö ei kaoks.
+Vigane argument saab samuti refused. Lubatud tööd pannakse FIFO järjekorda.
 
 ## 6. Vana töö aegub
 

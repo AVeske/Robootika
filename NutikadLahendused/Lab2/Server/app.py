@@ -1,9 +1,15 @@
 import os
+import hashlib
+import io
+import re
+import warnings
+from pathlib import Path
 import threading
 from collections import deque
 from datetime import datetime
 
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, jsonify, render_template, request, send_file, url_for
+from PIL import Image, UnidentifiedImageError
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -15,7 +21,71 @@ if not ATOM_API_KEY:
 JOB_TTL_SECONDS = 30
 ONLINE_TIMEOUT_SECONDS = 10
 ALLOWED_JOBS = ["letter", "show_image"]
-ALLOWED_IMAGES = ("smile", "heart", "checker")
+# PNGs persist across restarts; jobs remain in RAM.
+app.config["IMAGE_DIR"] = os.getenv("IMAGE_DIR", str(Path(app.instance_path) / "images"))
+app.config["MAX_CONTENT_LENGTH"] = 1024 * 1024 + 65536
+MAX_UPLOAD_BYTES = 1024 * 1024
+
+
+def image_path(image_id):
+    if not isinstance(image_id, str) or not re.fullmatch(r"[0-9a-f]{64}", image_id):
+        return None
+    return Path(app.config["IMAGE_DIR"]) / (image_id + ".png")
+
+
+@app.errorhandler(413)
+def upload_too_large(error):
+    return jsonify(status="refused", reason="PNG upload limit is 1 MiB"), 413
+
+
+@app.route("/api/images", methods=["GET", "POST"])
+def images():
+    directory = Path(app.config["IMAGE_DIR"])
+    if request.method == "GET":
+        files = sorted(directory.glob("*.png")) if directory.exists() else []
+        return jsonify(images=[{"id": p.stem, "name": p.stem[:12] + ".png"}
+                               for p in files if image_path(p.stem) is not None])
+    upload = request.files.get("file")
+    if upload is None:
+        return jsonify(status="refused", reason="PNG file required in field file"), 400
+    raw = upload.read(MAX_UPLOAD_BYTES + 1)
+    if len(raw) > MAX_UPLOAD_BYTES:
+        return upload_too_large(None)
+    try:
+        with warnings.catch_warnings():
+            warnings.simplefilter("error", Image.DecompressionBombWarning)
+            with Image.open(io.BytesIO(raw)) as source:
+                if source.format != "PNG" or getattr(source, "n_frames", 1) != 1:
+                    raise ValueError("Only static PNG images are supported")
+                if not (1 <= source.width <= 2048 and 1 <= source.height <= 2048):
+                    raise ValueError("Image dimensions must not exceed 2048 x 2048")
+                source.load()
+                # Fit the AtomS3R screen, flatten transparency onto black.
+                source.thumbnail((128, 128))
+                rgba = source.convert("RGBA")
+                canvas = Image.new("RGB", (128, 128), "black")
+                canvas.paste(rgba, ((128-rgba.width)//2, (128-rgba.height)//2), rgba)
+                output = io.BytesIO()
+                canvas.save(output, format="PNG")
+                normalized = output.getvalue()
+    except (UnidentifiedImageError, OSError, ValueError, SyntaxError,
+            Image.DecompressionBombError, Image.DecompressionBombWarning):
+        return jsonify(status="refused", reason="Invalid PNG; use a static PNG up to 2048 x 2048"), 400
+    image_id = hashlib.sha256(normalized).hexdigest()
+    directory.mkdir(parents=True, exist_ok=True)
+    image_path(image_id).write_bytes(normalized)
+    return jsonify(id=image_id, name=image_id[:12] + ".png", width=128, height=128), 201
+
+
+@app.route("/api/images/<image_id>/png")
+def download_image(image_id):
+    if request.headers.get("X-API-Key") != ATOM_API_KEY:
+        return jsonify(error="unauthorized"), 401
+    path = image_path(image_id)
+    if path is None or not path.is_file():
+        return jsonify(error="Unknown image"), 404
+    return send_file(path, mimetype="image/png", conditional=True)
+
 FINAL_RESULTS = ("done", "refused", "error", "expired")
 
 # Unclaimed jobs are FIFO; dispatched jobs retain their individual status.
@@ -64,8 +134,10 @@ def create_job():
                 or len(argument.upper()) != 1 or not "A" <= argument.upper() <= "Z"):
             return jsonify(status="refused", reason="Letter must be A-Z"), 400
         argument = argument.upper()
-    if job_type == "show_image" and argument not in ALLOWED_IMAGES:
-        return jsonify(status="refused", reason="Unknown image; use smile, heart or checker"), 400
+    if job_type == "show_image":
+        path = image_path(argument)
+        if path is None or not path.is_file():
+            return jsonify(status="refused", reason="Select an uploaded image"), 400
     with state_lock:
         expire_pending_jobs()
         job = {"id": next_job_id, "job": job_type, "arg": argument,
@@ -89,7 +161,10 @@ def poll():
             return jsonify(msg=None)
         job = jobs[pending_jobs.popleft()]
         job["status"] = "sent"
-        return jsonify(msg=job["id"], job=job["job"], arg=job["arg"])
+        payload = dict(msg=job["id"], job=job["job"], arg=job["arg"])
+        if job["job"] == "show_image":
+            payload["image_url"] = url_for("download_image", image_id=job["arg"])
+        return jsonify(payload)
 
 
 @app.route("/api/result", methods=["POST"])

@@ -642,12 +642,37 @@ Server ei loo ise ühendust Atomi ega robotiga.
 Atom võtab ise serveriga perioodiliselt ühendust.
 ```
 
-## Täpsustused 23.10.2026
+## PNG pilditööd (24.10.2026)
 
-`show_image` argument on üks nimedest `smile`, `heart`, `checker`.
-Tundmatu pilt saab HTTP 400 ja `refused`. Ootel või saadetud töö ajal
-saab uus lubatud töö HTTP 409 ja `refused`; eelmine töö ei kirjutata üle.
-Ootel töö aegub 30 sekundi täitumisel nii polli kui ka staatusepäringu ajal.
-Tulemust saab anda ainult saadetud tööle; sama tulemuse kordussaatmine on lubatud.
-`last_seen` on ISO 8601 ajatempel koos serveri ajavööndi nihkega.
-Paigaldus ja käsitsi kontroll: [deployment-and-verification.md](deployment-and-verification.md).
+`show_image` ei kasuta enam eelmääratud pildinimesid.
+
+| Meetod | Tee | Sisu / vastus |
+|---|---|---|
+| POST | `/api/images` | Brauser saadab multipart-väljal `file` PNG; vastus HTTP 201 `{id, name, width, height}` |
+| GET | `/api/images` | Brauser saab `{images: [{id, name}]}` valiku täitmiseks |
+| GET | `/api/images/<id>/png` | Atom saadab `X-API-Key`; vastus `image/png`, vale võti 401, tundmatu ID 404 |
+
+Üleslaadimise piir on 1 MiB; lubatud on staatiline PNG kuni 2048 × 2048.
+Vigane pilt saab HTTP 400 ja `refused`, liiga suur päring HTTP 413.
+Server salvestab normaliseeritud 128 × 128 RGB PNG, säilitades proportsioonid
+ja kasutades musta tausta. ID on salvestatud faili SHA-256; sama pilt ei dubleeru.
+Pildid säilivad kettal restartide vahel, tööd on jätkuvalt RAM-is.
+
+Töö loomine: `{"job":"show_image","arg":"<uploadist saadud id>"}`.
+Tundmatu pilt saab HTTP 400 ja `refused`.
+Poll-vastus:
+
+```json
+{"msg":17,"job":"show_image","arg":"<id>","image_url":"/api/images/<id>/png"}
+```
+
+Atom ühendab suhtelise `image_url` tee enda seadistatud HTTPS serveri aadressiga,
+kasutab allalaadimisel sama API võtit ja kontrollib serveri TLS sertifikaati.
+API võtit URL-i ega brauserisse ei panda. Pärast PNG kuvamist saadab Atom
+`{"id":17,"result":"done"}`; vea korral `error` või mittetoetatud töö korral `refused`.
+Serveri osa on rakendatud; Atomi püsivara pole selles repos ja vajab ühendamist.
+
+Lubatud tööd pannakse FIFO järjekorda, tulemusi seostatakse töö ID-ga.
+Ootel töö aegub 30 sekundiga nii staatusepäringul kui pollimisel.
+`last_seen` on ISO 8601 ajatempel koos ajavööndi nihkega.
+Paigaldus: [deployment-and-verification.md](deployment-and-verification.md).

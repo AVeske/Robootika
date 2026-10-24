@@ -86,11 +86,11 @@
     </div>
     <div id="imageFields" hidden>
         <label for="image">Image:</label>
-        <select id="image">
-            <option value="smile">Smile</option>
-            <option value="heart">Heart</option>
-            <option value="checker">Checker</option>
-        </select>
+        <select id="image"><option value="">No uploaded images</option></select>
+        <p>Upload a PNG (up to 1 MiB). It will fit the 128 × 128 Atom screen.</p>
+        <input id="imageFile" type="file" accept="image/png,.png">
+        <button id="uploadImage" type="button">UPLOAD PNG</button>
+        <p id="uploadResult" role="status"></p>
     </div>
     <button onclick="sendJob()">
         SEND JOB
@@ -143,6 +143,42 @@ document.getElementById("jobType").addEventListener("change", (event) => {
     const isLetter = event.target.value === "letter";
     document.getElementById("letterFields").hidden = !isLetter;
     document.getElementById("imageFields").hidden = isLetter;
+});
+
+async function loadImages(selectedId) {
+    const response = await fetch("/api/images");
+    if (!response.ok) throw new Error("Could not load images");
+    const data = await response.json();
+    const select = document.getElementById("image");
+    const previous = selectedId || select.value;
+    select.replaceChildren();
+    for (const image of data.images) {
+        select.add(new Option(image.name, image.id));
+    }
+    if (!data.images.length) select.add(new Option("No uploaded images", ""));
+    if (data.images.some(image => image.id === previous)) select.value = previous;
+}
+
+document.getElementById("uploadImage").addEventListener("click", async () => {
+    const button = document.getElementById("uploadImage");
+    const result = document.getElementById("uploadResult");
+    const file = document.getElementById("imageFile").files[0];
+    if (!file) { result.textContent = "Select a PNG first."; return; }
+    const body = new FormData();
+    body.append("file", file);
+    button.disabled = true;
+    try {
+        const response = await fetch("/api/images", {method: "POST", body});
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.reason || "Upload failed");
+        await loadImages(data.id);
+        result.textContent = "PNG uploaded and selected. Press SEND JOB to show it on Atom.";
+    } catch (error) { result.textContent = error.message; }
+    finally { button.disabled = false; }
+});
+
+loadImages().catch(error => {
+    document.getElementById("uploadResult").textContent = error.message;
 });
 
 async function sendJob() {
