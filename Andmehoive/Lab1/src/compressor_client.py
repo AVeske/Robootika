@@ -17,6 +17,6 @@ def set_compressor(mode):
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print("usage: python compressor_client.py suck|off")
+        print("usage: python compressor_client.py suck|blow|off")
         sys.exit(1)
     print(set_compressor(sys.argv[1]))
