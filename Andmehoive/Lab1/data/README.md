@@ -160,3 +160,22 @@ Mida see näitab:
 - **Pärast väljalülitust langeb rõhk veel 15 kPa** (−33 → −48,6). Seepärast hoitakse tegelikult −38 kPa, mitte −30.
 
 Lisaks (Labori 2 jaoks): samas logis op-ampi kanal: leke 0,016 kPa/s, müra hoidmisel **0,42 kPa** (toores 1,25 kPa) → umbes 3 korda väiksem müra.
+
+## Oma kast: puhumine klaasi vastu (`l1_blow_glass.csv`)
+
+Käsk: `python pump_controller.py blow raw t=30 ../../Lab1/data/l1_blow_glass.csv` (Lab2/src). Napp klaasil. Riba: käima nõrgemal kui +15 kPa, seisma +30 kPa juures.
+
+| Mis | Number |
+| :--- | :--- |
+| Rõhk alguses | 0,8 kPa (vaakum oli juba läinud) |
+| Kõige kõrgem rõhk | **+51,4 kPa** |
+| Pumba tööaeg ühe käivituse kohta | 0,08–1,84 s |
+| Rõhk pärast väljalülitust | +30 → ~0 kPa umbes **1 s** jooksul |
+| **Käivitusi** | **10 korda 17,7 s jooksul**, siis käivituste piir (10 / min) peatas pumba |
+| Seisuaeg käivituste vahel | 1,01 s (= seisuaja alampiir) |
+| Pumba töötsükkel | 5,4 s / 30 s = 18 % |
+
+Mida see näitab:
+- **Puhumine ei hoia rõhku**, sest klaas tõuseb napilt ja õhk läheb välja. Rõhk on +30 kPa ainult hetke.
+- **Ilma piirideta oleks see lühitsükkel.** Seisuaja alampiir (1 s) ja käivituste piir (10 / min) töötasid: pärast 10. käivitust pump enam ei käivitunud.
+- **Järeldus `pump_control.md` jaoks:** puhumine ei ole "hoidmine", vaid ühekordne impulss klaasi lahti laskmiseks. Parem loogika: puhu kuni +30 kPa või kuni X s, siis `off`, ja ära käivita uuesti.
