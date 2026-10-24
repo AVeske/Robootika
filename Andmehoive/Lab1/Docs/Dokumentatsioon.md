@@ -38,11 +38,13 @@ Toru T-liitmik jagab rõhuühenduse anduri ja iminapa vahel. Nii saab mõõta r�
 
 ## `scripts_ai` failid
 
-- [atom_sensor.py](../scripts_ai/atom_sensor.py) käib AtomS3 peal. See loeb GPIO 25 ADC-d, keskmistab 32 ADC näitu ja väljastab iga 10 ms järel rea kujul `aeg_ms,mikrovoltid`. See ei arvuta rõhku ega kuva seda ekraanil.
-- [live_logger.py](../scripts_ai/live_logger.py) käib arvutis. See saadab `atom_sensor.py` sisu Atomile, loeb seriali, teisendab mikrovoltide väärtuse rõhuks, logib mõõtmised ning juhib kompressorit `compressor_client.py` kaudu. Tavalisel lõpetamisel proovib see pumba välja lülitada.
-- [compressor_client.py](../scripts_ai/compressor_client.py) saadab HTTP POST päringu aadressile `http://127.0.0.1:8000/api/pump`. Päringu JSON sisaldab näiteks `{"mode":"suck"}` või `{"mode":"off"}`. See on klient; pumba API teenus peab eraldi töötama samas arvutis.
-- [pump_control.py](../scripts_ai/pump_control.py) on teine, eraldi juhtimisprototüüp. See mõõdab rõhku arvutis, arvutab atmosfäärirõhu käivitumisel ning kasutab hüstereesi: üle 90 kPa absoluutrõhu korral pump sisse, alla 75 kPa korral välja. Suhtelise rõhu piirid `-70…+110 kPa` toimivad täiendava ohutuspiirina.
-- [log.csv](../scripts_ai/log.csv) sisaldab hetkel ainult veerupäist `time_ms,microvolts,pressure_kpa,relative_kpa,compressor`; mõõteridu seal pole.
+> **24.10.2026:** kaust `scripts_ai` eemaldati, sest seda ei kasutatud. Failid on alles git ajaloos (commit `37aba37`).
+
+- `atom_sensor.py` käib AtomS3 peal. See loeb GPIO 25 ADC-d, keskmistab 32 ADC näitu ja väljastab iga 10 ms järel rea kujul `aeg_ms,mikrovoltid`. See ei arvuta rõhku ega kuva seda ekraanil.
+- `live_logger.py` käib arvutis. See saadab `atom_sensor.py` sisu Atomile, loeb seriali, teisendab mikrovoltide väärtuse rõhuks, logib mõõtmised ning juhib kompressorit `compressor_client.py` kaudu. Tavalisel lõpetamisel proovib see pumba välja lülitada.
+- `compressor_client.py` saadab HTTP POST päringu aadressile `http://127.0.0.1:8000/api/pump`. Päringu JSON sisaldab näiteks `{"mode":"suck"}` või `{"mode":"off"}`. See on klient; pumba API teenus peab eraldi töötama samas arvutis.
+- `pump_control.py` on teine, eraldi juhtimisprototüüp. See mõõdab rõhku arvutis, arvutab atmosfäärirõhu käivitumisel ning kasutab hüstereesi: üle 90 kPa absoluutrõhu korral pump sisse, alla 75 kPa korral välja. Suhtelise rõhu piirid `-70…+110 kPa` toimivad täiendava ohutuspiirina.
+- `log.csv` sisaldab hetkel ainult veerupäist `time_ms,microvolts,pressure_kpa,relative_kpa,compressor`; mõõteridu seal pole.
 
 ### `scripts_ai` variantide erinevus
 
@@ -50,11 +52,13 @@ Toru T-liitmik jagab rõhuühenduse anduri ja iminapa vahel. Nii saab mõõta r�
 
 ## `scripts_by_hands` failid
 
-- [controller.py](../scripts_by_hands/controller.py) käib Atomil. See loeb GPIO 25 ADC-d, väljastab pinge voltides (`"1.234 V"`) ja ootab iga näidu vahel 100 ms.
-- [pump_controller.py](../scripts_by_hands/pump_controller.py) käib arvutis. See avab praegu COM5 kiirusega 115200, saadab `controller.py` Atomile ja loeb pingeread. Programm arvutab absoluutrõhu, juhib pumpa ning küsib Escape'i või Ctrl-C korral väljumisel pumba väljalülitamist. Lävendid on 98 kPa sisse ja 70 kPa välja; nende vahel hoitakse senist režiimi.
-- [live_logger.py](../scripts_by_hands/live_logger.py) avab käivitamisel `log.csv` faili kirjutamiseks, lisab päise ja pakub `write_log()` funktsiooni. Iga rida kirjutatakse kohe kettale ning sama CSV-rida prinditakse ka konsooli.
-- [compressor_client.py](../scripts_by_hands/compressor_client.py) saadab pumba režiimi samale kohalikule HTTP API aadressile nagu `scripts_ai` klient.
-- [log.csv](../scripts_by_hands/log.csv) sisaldab näidismõõtmisi. Veerud on `time_ms,volts,pressure_kpa,compressor`. Ajatempel on arvuti Unix-aeg millisekundites, rõhk on absoluutne kPa ja pumba veerg näitab logitud režiimi.
+> **24.10.2026:** skriptid on nüüd kaustas [`../src/`](../src/README.md) ja logid kaustas [`../data/`](../data/README.md).
+
+- [controller.py](../src/controller.py) käib Atomil. See loeb GPIO 25 ADC-d, väljastab pinge voltides (`"1.234 V"`) ja ootab iga näidu vahel 100 ms.
+- [pump_controller.py](../src/pump_controller.py) käib arvutis. See avab praegu COM5 kiirusega 115200, saadab `controller.py` Atomile ja loeb pingeread. Programm arvutab absoluutrõhu, juhib pumpa ning küsib Escape'i või Ctrl-C korral väljumisel pumba väljalülitamist. Lävendid on 98 kPa sisse ja 70 kPa välja; nende vahel hoitakse senist režiimi.
+- [live_logger.py](../src/live_logger.py) avab käivitamisel `log.csv` faili kirjutamiseks, lisab päise ja pakub `write_log()` funktsiooni. Iga rida kirjutatakse kohe kettale ning sama CSV-rida prinditakse ka konsooli.
+- [compressor_client.py](../src/compressor_client.py) saadab pumba režiimi samale kohalikule HTTP API aadressile nagu `scripts_ai` klient.
+- [log.csv](../data/) sisaldab näidismõõtmisi. Veerud on `time_ms,volts,pressure_kpa,compressor`. Ajatempel on arvuti Unix-aeg millisekundites, rõhk on absoluutne kPa ja pumba veerg näitab logitud režiimi.
 
 ### `scripts_by_hands` variandi erinevus
 
