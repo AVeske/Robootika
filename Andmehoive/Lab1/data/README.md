@@ -76,9 +76,9 @@ Tehtud skriptiga `Lab2/src/pump_controller.py`, sest Atom loeb seal mõlemat vii
 
 | Mis | Number |
 | :--- | :--- |
-| Mõõdetud (pinge vs ADC kood kõigist logidest) | 0,821 mV sammu kohta (ideaal 3,3 V / 4096 = 0,806 mV) |
+| Mõõdetud (pinge vs ADC kood kõigist logidest) | 0,819 mV sammu kohta (ideaal 3,3 V / 4096 = 0,806 mV) |
 | Anduri tundlikkus | 5 V · 0,0012858 = 6,43 mV/kPa |
-| **Pa ühe ADC sammu kohta** | 0,821 / 6,43 ≈ **128 Pa** (arvutatud 125 Pa) |
+| **Pa ühe ADC sammu kohta** | 0,819 / 6,43 ≈ **127 Pa** (arvutatud 125 Pa) |
 
 ### Müra
 
@@ -88,6 +88,17 @@ Pumbaga logist on võetud ainult read, kus pump töötab, ilma 2 s üleminekuta.
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | Pump seisab | 2795 | 0,819 V | **8,7 LSB** | 1,11 kPa | 0,6 Hz (aeglane triiv) |
 | Pump töötab (napp õhus) | 2701 | 0,735 V (≈ −13 kPa) | **12,0 LSB** | 1,54 kPa | **19,5 Hz**, **39,1 Hz**, väike 10 Hz |
+| Pump seisab, MG400 servod väljas | 2795 | 0,819 V | **8,7 LSB** | 1,10 kPa | 10 Hz |
+
+Tipu kõrgus müra põhja (mediaani) suhtes:
+
+| Sagedus | Pump seisab | Pump töötab | Servod väljas |
+| :--- | :--- | :--- | :--- |
+| 0,4 Hz | 5,8× | 2,6× | 4,4× |
+| 10 Hz | 2,1× | 3,5× | 7,6× |
+| 19,5 Hz | 1,0× | **86×** | 0,9× |
+| 39,1 Hz | 0,6× | **12,6×** | 0,6× |
+| 49,8 Hz | 0,4× | 0,8× | 1,6× |
 
 Spekter: ![Labori 1 müra spekter](../Docs/l1_spectrum.png)
 
@@ -95,6 +106,10 @@ Tippude nimed:
 - **19,5 Hz — pumba mootor.** Kontrollitud allika väljalülitamisega: pump seisab → tippu ei ole.
 - **39,1 Hz — sama mootori 2. harmooniline** (2 × 19,5 Hz). Kaob koos pumbaga.
 - **50 Hz (võrk) ei ole näha.** 100 Hz juures on 50 Hz täpselt Nyquisti sagedus, nii et see läheb spektri serva või 0 Hz peale. Selle nägemiseks on vaja suuremat sagedust või ostsilloskoobi FFT-d.
-- **MG400 servod:** `l1_noise_servo_off.csv` on tehtud Labori 1 skriptiga, mis loeb GPIO25 (praegu op-ampi väljund), nii et toorest signaali seal ei ole. Op-ampi signaali järgi on müra sama: servod sees 0,0195 V, servod väljas 0,0199 V std. **Tuleb uuesti teha** Labori 2 skriptiga (`off raw`).
+- **MG400 servod — mõõdetavat mõju ei ole.** Kontrollitud allika väljalülitamisega (`l1_noise_servo_off.csv`, Disable): müra 8,71 LSB servod väljas vs 8,69 LSB servod sees, ükski tipp ei kadunud.
+- **10 Hz — allikas teadmata.** Ei ole pump ega servod: servod väljas oli ta isegi kõrgem (7,6× vs 2,1×). Kandidaat: USB / arvuti (logija prindib iga 10. rea ehk 10 korda sekundis). Kontrollimata.
+- **0,4–0,6 Hz — aeglane triiv** (temperatuur, toide), mitte võnkumine.
+
+**Kaks allikat on kontrollitud väljalülitamisega:** pumba mootor (tipp kaob) ja MG400 servod (muutust ei ole).
 
 Võrdlus 03.10 logiga (10 Hz): siis 9,6 LSB pump seisab, 16,2 LSB pump töötab. Nüüd 100 Hz juures 8,7 ja 12,0 LSB.
