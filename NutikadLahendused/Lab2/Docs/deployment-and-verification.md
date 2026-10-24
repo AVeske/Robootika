@@ -92,3 +92,5 @@ Serveri ühendusvea korral näitab leht SERVER ERROR.
 
 Serveri kaustas: `python -m unittest discover -s tests -v`.
 See kontrollib serveri protokolli, mitte Atomi ekraani ega roboti liikumist.
+
+Nõuete koodikontroll, katkestuskatsed ja latentsuse mõõtmise juhend: [verification-and-latency.md](verification-and-latency.md).
