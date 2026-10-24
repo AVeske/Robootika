@@ -23,3 +23,10 @@ Katsetame ja täiendame patakahoidiku prototüübid.
 
 **02-03.10**
 Katsetame ja täiendame patakahoidiku prototüübid. Katsed selle kirjutamisega. Eesmärk: pastakas peab püsima kindlalt ja mitte olema liiga lõtv hoidikus.
+
+
+Lisatud järgmised mudelid/joonised:
+- `Printer, ja tööriist, mis annab järele CHECK.3mf`;
+- `Printer, ja tööriist, mis annab järele OSA1.3mf`;
+- `Printer, ja tööriist, mis annab järele OSA2.1.3mf`;
+- `Printer, ja tööriist, mis annab järele PROTOTYP.stl`.

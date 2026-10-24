@@ -82,17 +82,22 @@ Muudatused tehtud ESP32-Image-Server-Fork branchi atom-image-server kausta faili
 
 
 
-## 24.10.2026 — failistruktuuri korrastamine
 
-- Failid paigutati laborijuhendi kaustajaotuse järgi; README-sse lisati otselingid.
-- Dokumentatsioon on `Docs/` all. Programmi- ja veebikoodi sisu ei muudetud.
-- Mõõtetabelid liikusid `Docs/` alla ja analüüsitööriist `src/` alla. `Docs/` ja `Server/` säilitasid olemasoleva tähesuuruse; teenusefaili rajad jäid samaks.
+## 24.10.2026
+
+- **PNG pilditöö (`e26cb9b`).** Serverisse ja juhtimislehele lisati piltide üleslaadimine, nimekiri ja Atomi allalaadimise liides. Server kontrollib staatilist PNG-d, 1 MiB suuruspiiri ja kuni 2048 × 2048 mõõtmeid ning salvestab proportsioone säilitava 128 × 128 pildi. Pildi ID põhineb räsi väärtusel ja pildid säilivad kettal. Täiendati sõltuvusi, API dokumentatsiooni ning teste; piltide salvestuskaust lisati ignoreeritavate hulka.
+- **Eelvaade ja ajatemplid (`78522ce`).** Lisati valitud pildi eelvaade brauseris ning `GET /api/images/<id>/preview`. Viimase postilkäigu aega kuvatakse veebilehel Tallinna ajas; serveri ajatempel sisaldab ajavööndi nihet. 
+- **Kontrollid ja mõõtmismallid (`36097a9`).** Lisati tööde keeldumise, aegumise, autentimise, kohaloleku ja katkestusest taastumise serveritestid ning seadmekatsete juhend. 
+- **Serveri püsiv käivitamine (`b47ae12`).** Lisati `robot-postoffice.service` ja paigaldusjuhend. Gunicorn kuulab `127.0.0.1:5000`; systemd haldab protsessi ja võimaldab selle käivitada sõltumata SSH seansist. 
+- **API ja sisendikontroll (`88e4d1b`).** `Docs/server_api.md` kirjutati vastavusse praeguse serveriga: brauseri, serveri, Atomi, jaama ja roboti rollid; päringud, vastused, võtmed, ID-d, järjekord, tulemused ja piirangud. Tähetöö veebiväli muudeti A–Z valikuks ning server kontrollib enne suurtäheks teisendamist algset ASCII tähte. Varasemas tänases sissekandes on kirjas 12 läbinud serveritesti; siin ei lisata uut katsesooritust.
+- **ÜldResult (`cd4b5b8`, `88e4d1b`).** [Ühiskatse kirjeldus](../../ÜldResult/Lab1&2/Kirjeldus.md) ja kolm MOV-faili koondavad veebilehe, serveri, Atomi ning roboti demonstratsiooni. 
 
 
-## 24.10.2026 — lubatud tööde ja tähe sisendi kontroll
+### Lubatud tööde ja tähe sisendi kontroll
 
 - Tähe vabatekstiväli asendati A–Z valikuga ja brauserisse lisati saatmiseelne kontroll.
 - Server kontrollib algset sisendit mustriga `[A-Za-z]` enne suurtäheks teisendamist. Nii ei pääse Unicode `ı` ja `ſ` teisendamise kaudu lubatud täheks. Numbrid ja tundmatud tööd annavad HTTP 400 / refused.
 - Lubatud töödeks jäid `letter` ja `show_image`. Pildi ID numbreid ei keelatud.
 - Laiendati teste: sobivad kõik 52 ASCII tähte; vigane sisend ei muuda lubatud ootel tööd ega jõua poll-vastusesse. Kõik 12 serveritesti läbisid.
-- Uuendati API, kontrolli, paigalduse ja tööde salvestuse dokumentatsiooni. Järgmiseks tuleb uuendus dropletis kasutusele võtta ja teha füüsiline mitteliikumise katse.
+- Uuendati API, kontrolli, paigalduse ja tööde salvestuse dokumentatsiooni. 
+

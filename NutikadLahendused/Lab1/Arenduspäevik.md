@@ -34,14 +34,13 @@
 
 
 
-## 24.10.2026 — failistruktuuri korrastamine
+## 24.10.2026
 
 - Failid paigutati laborijuhendi kaustajaotuse järgi; README-sse lisati otselingid.
 - Dokumentatsioon on `docs/` all. Programmi- ja veebikoodi sisu ei muudetud.
-
-
-## 24.10.2026 — Atomi lehe seadete ja testide dokumentatsioon
-
 - Kõrvalrepo püsivara põhjal täiendati `docs/atom_page.md`: lehe osad, nupud, API teed, salvestamine ja katsejuhis.
-- `TEST DISPLAY` ning pildi- ja žestiseaded on koodis olemas.
-- Selgitati, kuidas tähevaliku režiim mõjutab nupužestide kasutamist. Püsivara ei muudetud ega laaditud seadmesse.
+
+- **ÜldResult (`cd4b5b8`, `88e4d1b`).** Lisati `AtomS3_Pildi_edastamine_ja_kuvamine_1.MOV`, `AtomS3_Pildi_edastamine_ja_kuvamine_2.MOV` ja `MG400_Tahtede_joonistamine.MOV` kausta `ÜldResult/Lab1&2/`. Täiendati [ühiskatse kirjeldust](../../ÜldResult/Lab1&2/Kirjeldus.md): seal on kirjas Atomi pildikuva, veebist saadetud tähtede joonistamine ning otse seadmest saadetud H. Samas kirjeldatakse vetruva pastakahoidiku käitumist.
+- **Failide leitavus (`88e4d1b`).** `atom_page.md` ja `letter_writer.md` viidi `docs/` alla ning lisati labori ja aine README-de lingid. `src/`, `firmware/` ja `data/` README-d selgitavad väliste projektide ning asendifaili asukohta.
+- **Atomi lehe kirjeldus (`88e4d1b`).** Dokument koondab pildipesad, eelvaate, pildi saatmise, nupužestid ja `TEST DISPLAY` testi ning kirjeldab nende kontrollimist.
+
