@@ -196,3 +196,33 @@ Mis juhtus: seriali lugemine andis vea (`SerialException`), programm läks `fina
 ✅ **Nõue "USB välja, pump välja" on täidetud.**
 
 Mida see ei kata: kui **arvuti ise** kukub või Pythoni protsess tapetakse, jääb MG400 DO liin üles ja pump töötab edasi. Selle vastu peaks ajapiir olema roboti või pumbakasti poolel.
+
+## Oma kast: suletud liin (`l1_hold_sealed.csv`)
+
+Käsk: `python pump_controller.py suck raw t=60 ../../Lab1/data/l1_hold_sealed.csv` (Lab2/src). Liin suletud (korgi asemel). Riba sama: käima −15 kPa, seisma −30 kPa.
+
+| Mis | Number |
+| :--- | :--- |
+| Rõhk enne pumpa | 0,2 kPa |
+| Pumba tööaeg | **0,10 s** |
+| Rõhk väljalülitamisel | −32,4 kPa |
+| Kõige madalam rõhk | −44,7 kPa |
+| Rõhk hoidmisel | −36,0 kPa (1 s pärast) → −34,6 kPa (60 s lõpus) |
+| **Leke** | **0,025 kPa/s** |
+| **Käivitusi** | **1 kord 60 s jooksul** |
+| Müra hoidmisel | 1,30 kPa (op-amp 0,45 kPa) |
+
+## Kokkuvõte: kolm olukorda (riba −15 / −30 kPa, seisuaja alampiir 1 s, max 10 käivitust / min)
+
+| Olukord | Fail | Rõhk hoidmisel | Leke | Pumba tööaeg | Käivitusi minutis | Lühitsükkel? |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| Napp klaasil | `l1_hold_glass.csv` | −38 kPa | 0,019 kPa/s | 0,10 s | 1 | ei |
+| Napp õhus | `l1_hold_air.csv` | −13 kPa (pump töötab) | — | 59 s (98 %) | 1 | ei |
+| Suletud liin | `l1_hold_sealed.csv` | −35 kPa | 0,025 kPa/s | 0,10 s | 1 | ei |
+| Puhumine klaasi vastu | `l1_blow_glass.csv` | ei hoia (+30 → 0 ~1 s) | — | 0,1–1,8 s | 10 (piir) | **jah**, piir peatas |
+
+Sealt tulevad `pump_control.md` numbrid:
+- **Riba:** −15 / −30 kPa. Müra on 1,1–1,5 kPa, riba laius 15 kPa ≈ **10–14 korda müra kohal**.
+- **Seisuaja alampiir:** 1 s. Imemisel ei olnud seda vaja (leke on aeglane), puhumisel just see piiras käivitusi.
+- **Käivituste ülempiir:** 10 minutis. Imemisel 1 / min, puhumisel jõudis piirini.
+- **Rõhk napp klaasil −38 kPa, napp õhus −13 kPa.** Nende vahe on 25 kPa, nii et haaret on lihtne ära tunda.
