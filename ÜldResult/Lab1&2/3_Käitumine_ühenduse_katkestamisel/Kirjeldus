@@ -1,0 +1,8 @@
+## Videokatsete tulemuste kokkuvõte
+
+Video filmitud 25.10
+
+Videos on näha, et robotile antakse töö kirjutada tähte - staatus on "send". Seejärel katkestatakse roboti ühendus. Vaatamata sellele lõpetab robot oma töö ära. Ühenduse taasloomisel on näha, et staatus on "Done".
+
+Logi:
+![Logi](image.png)
