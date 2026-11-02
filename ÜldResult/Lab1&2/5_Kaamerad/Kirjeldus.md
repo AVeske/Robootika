@@ -1,5 +1,7 @@
 ## Videokatsete tulemuste kokkuvõte
 
+[Vaata kaamerate videot (MP4)](kaamerad.mp4)
+
 Video filmitud 25.10
 
 Sülearvuti ekraanil on avatud veebipõhine kasutajaliides, kus kuvatakse kahte pildivaadet ning süsteemiga seotud informatsiooni. Video jooksul on näha robotkäe liikumist ja joonistamise protsessi ning selle jälgimist arvutist.

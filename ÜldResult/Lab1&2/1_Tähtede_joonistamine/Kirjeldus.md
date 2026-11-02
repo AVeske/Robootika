@@ -1,5 +1,7 @@
 ## Videokatsete tulemuste kokkuvõte
 
+[Vaata tähtede joonistamise videot (MP4)](tahtede_joonistamine.mp4)
+
 Video filmitud 24.10
 
 Videos demonstreeritakse projekti raames arendatud süsteemi erinevate komponentide toimimist ja nende omavahelist koostööd. Katsete eesmärk oli kontrollida veebipõhise juhtimissüsteemi, Flaski serveri, M5Stack AtomS3 mikrokontrolleri ja MG400 robotkäe funktsionaalsust.

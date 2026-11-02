@@ -1,5 +1,7 @@
 ## Videokatsete tulemuste kokkuvõte
 
+[Vaata esemete teisaldamise videot (MP4)](esemete_teisaldamine.mp4)
+
 Video filmitud 25.10
 
 Videos demonstreeritakse MG400 robotkäe tööd vaakumhaaratsiga, mille abil liigutatakse ese ühest kindlast asukohast teisse.
