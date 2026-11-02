@@ -39,3 +39,8 @@ Pilt. Põhineb Skeemil 3.
 - **Kümne haarde katseveeb (`ba77fc5`).** Lisati `src/pick_web.py`, mis avab lehe `http://127.0.0.1:8010`. Kahe salvestatud pesa vahel saab käivitada N edasi-tagasi haaret ning logida mõlemat rõhukanalit. Tsükkel ootab vaakumit kuni 5 s, kontrollib haaret tõstmisel ja kasutab vabastamiseks 0,5 s puhumisimpulssi. Lisati STOP, käsitsi pumbanupud ja andmete kadumise korral automaadi peatamine.
 - **Katseveebi kontroll.** Simulaator läbis 10/10 tsüklit ning STOP-i ja Atomi vaikimise katsed. Katseveebis puuduvad eraldi seisuaja ja käivituste arvu piirid, mistõttu see on mõeldud jälgitud katseks.
 - **ÜldResult (`cd4b5b8`, `88e4d1b`).** `ÜldResult/Lab1&2/` sisaldab Atomi pildiedastuse ja roboti tähtede joonistamise videosid ning süsteemide koostöö kirjeldust. [Ühiskatse kirjeldus](../../ÜldResult/Lab1&2/Kirjeldus.md).
+
+
+## 25.10.2026 — videokatsete filmimine
+
+- Filmiti rõhuandurit ja mikrokontrollerit kasutava haaramissüsteemi koostööd MG400 robotiga esemete teisaldamisel. [Esemete teisaldamise video](../../ÜldResult/Lab1&2/4_Esemete_teisaldamine/esemete_teisaldamine.mp4).

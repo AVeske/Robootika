@@ -109,3 +109,9 @@ Skeemi kirjeldus:
 - **Ühiskatse materjalid (`cd4b5b8`, `88e4d1b`).** Kausta `ÜldResult/Lab1&2/` lisati Atomi pildiedastuse ja MG400 tähtede joonistamise videod ning tulemuste kirjeldus. Kirjelduse järgi katsetati ka tähe H saatmist otse seadmest. [Ühiskatse kirjeldus](../../../ÜldResult/Lab1&2/Kirjeldus.md).
 
 
+
+
+## 25.10.2026 — videokatsete filmimine
+
+- Filmiti Atomi kasutamist tähe sisendina ja valitud tähe H joonistamist robotiga. [Tähtede joonistamise video](../../../ÜldResult/Lab1&2/1_Tähtede_joonistamine/tahtede_joonistamine.mp4).
+- Filmiti vaakumhaaratsi ja pumbajuhtimise kasutamist eseme haaramisel, teisaldamisel ning vabastamisel. [Esemete teisaldamise video](../../../ÜldResult/Lab1&2/4_Esemete_teisaldamine/esemete_teisaldamine.mp4).

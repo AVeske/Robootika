@@ -101,3 +101,11 @@ Muudatused tehtud ESP32-Image-Server-Fork branchi atom-image-server kausta faili
 - Laiendati teste: sobivad kõik 52 ASCII tähte; vigane sisend ei muuda lubatud ootel tööd ega jõua poll-vastusesse. Kõik 12 serveritesti läbisid.
 - Uuendati API, kontrolli, paigalduse ja tööde salvestuse dokumentatsiooni. 
 
+
+
+## 25.10.2026 — videokatsete filmimine
+
+- Filmiti veebilehe, Flaski serveri, Atomi ja MG400 koostööd tähetöö edastamisel ja joonistamisel. [Tähtede joonistamise video](../../ÜldResult/Lab1&2/1_Tähtede_joonistamine/tahtede_joonistamine.mp4).
+- Filmiti veebiliidese ja Atomi vahelist pildi edastamist ning ekraanil kuvamist. [Pildi edastamise video 1](../../ÜldResult/Lab1&2/2_Pildi_edastamine_ja_kuvamine/pildi_edastamine_1.mp4). [Pildi edastamise video 2](../../ÜldResult/Lab1&2/2_Pildi_edastamine_ja_kuvamine/pildi_edastamine_2.mp4).
+- Filmiti ühenduse katkestamist tähetöö ajal: robot lõpetab joonistamise ning ühenduse taastumisel kuvatakse töö olekuks Done. [Ühenduse katkestamise video](../../ÜldResult/Lab1&2/3_Käitumine_ühenduse_katkestamisel/uhenduse_katkestamine.mp4).
+- Filmiti USB-veebikaamera ja XIAO kaamera pildi kuvamist ühisel jälgimislehel roboti töötamise ajal. [Kaamerate video](../../ÜldResult/Lab1&2/5_Kaamerad/kaamerad.mp4).
