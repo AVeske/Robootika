@@ -1,7 +1,5 @@
 # Nutikad Lahendused
 
-Tag: `smart-solutions-lab1`
-
 ## 26.09.2026
 
 1. Loodi `atom_page.md`, mis kirjeldab AtomS3R-i veebiliidese ja tähevaliku arendust.
