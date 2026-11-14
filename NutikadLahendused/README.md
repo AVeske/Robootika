@@ -2,6 +2,7 @@
 
 - [Labor 1 — robot, ekraan ja tähemasin](Lab1/README.md)
 - [Labor 2 — server internetis ja kaks kaamerat](Lab2/README.md)
+- [Labor 3 — ruuter ja VPN](Lab3/README.md)
 
 Failid on korrastatud laborijuhendite jaotuse järgi: `docs/` dokumentidele ja mõõtmistele, `src/` jaama koodile ja abitööriistadele, `firmware/` Atomi projektile ning `data/` roboti asenditele. Labori 2 veebiserver on `Server/` kaustas. Arenduspäevikud on laborikaustade juures.
 
