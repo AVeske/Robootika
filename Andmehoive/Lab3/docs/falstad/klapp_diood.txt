@@ -1,0 +1,19 @@
+$ 1 0.000005 10.20027730826997 50 15 50 5e-11
+v 128 336 128 144 0 0 40 12 0 0 0.5
+w 128 144 256 144 0
+s 256 144 352 144 0 1 false
+w 352 144 448 144 0
+l 448 144 448 240 0 0.1 0
+r 448 240 448 336 0 40
+w 128 336 448 336 0
+w 448 144 576 144 0
+w 448 336 576 336 0
+d 576 336 576 144 2 default
+g 128 336 128 384 0
+x 20 240 120 245 4 14 Klapi\sBP\s12\sV
+x 230 120 400 125 4 14 Relee:\sCOM\s->\sNO
+x 380 290 440 295 4 14 Klapi
+x 380 306 440 311 4 14 mähis
+x 590 245 740 250 4 14 Kaitsediood\s1N4007
+x 590 265 740 270 4 14 triip\s(katood)\splussi\spoole
+x 20 440 700 445 4 14 Klõpsa\slülitit:\sON\s=\sklapp\slahti.\sOFF\s=\svool\sjookseb\släbi\sdioodi\sringi\sja\skustub.
