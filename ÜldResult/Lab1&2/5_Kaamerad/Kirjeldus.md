@@ -1,0 +1,19 @@
+## Videokatsete tulemuste kokkuvõte
+
+[Vaata kaamerate videot (MP4)](kaamerad.mp4)
+
+Video filmitud 25.10
+
+Sülearvuti ekraanil on avatud veebipõhine kasutajaliides, kus kuvatakse kahte pildivaadet ning süsteemiga seotud informatsiooni. Video jooksul on näha robotkäe liikumist ja joonistamise protsessi ning selle jälgimist arvutist.
+
+Seos laboriprojektiga: katse on seotud Nutikate lahenduste ning 3D-printimise ja CAD-i laboritega.
+
+Süsteemis kasutatakse kahte kaamerat: tavalist USB-veebikaamerat ja XIAO kaamerat.
+
+    - USB-veebikaamera edastab videopildi otse arvutisse USB-ühenduse kaudu.
+
+    - XIAO kaamera ühendub juhtmevabalt AtomS3 loodud Wi-Fi võrku, kus talle määratakse IP-aadress. See võimaldab XIAO kaameral edastada videopilti enda veebiserveri kaudu, millele pääseb ligi kaamera IP-aadressi abil.
+
+    - XIAO kaamera videovoog integreeritakse meie projekti ühisele stream-veebilehele, kasutades kaamera IP-aadressi ja vastavat videovoo aadressi.
+
+Tulemuseks on veebipõhine jälgimiskeskkond, kus saab kuvada mõlema kaamera videopilti ning jälgida MG400 robotkäe tööd erinevatest vaatenurkadest.

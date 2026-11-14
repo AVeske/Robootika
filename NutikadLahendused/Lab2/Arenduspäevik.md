@@ -80,3 +80,32 @@ Muudatused tehtud ESP32-Image-Server-Fork branchi atom-image-server kausta faili
    - Lisati ka signaalid ja logid, millega näha, kas WiFi on ühendatud ja mida server vastab.
    - Kasu: see teeb seadme palju rohkem “hallatavaks” ja “keskjuhtimisega” sobivaks; kood on valmis edasiseks serveripoolseks kontrolliks.
 
+
+
+
+## 24.10.2026
+
+- **PNG pilditöö (`e26cb9b`).** Serverisse ja juhtimislehele lisati piltide üleslaadimine, nimekiri ja Atomi allalaadimise liides. Server kontrollib staatilist PNG-d, 1 MiB suuruspiiri ja kuni 2048 × 2048 mõõtmeid ning salvestab proportsioone säilitava 128 × 128 pildi. Pildi ID põhineb räsi väärtusel ja pildid säilivad kettal. Täiendati sõltuvusi, API dokumentatsiooni ning teste; piltide salvestuskaust lisati ignoreeritavate hulka.
+- **Eelvaade ja ajatemplid (`78522ce`).** Lisati valitud pildi eelvaade brauseris ning `GET /api/images/<id>/preview`. Viimase postilkäigu aega kuvatakse veebilehel Tallinna ajas; serveri ajatempel sisaldab ajavööndi nihet. 
+- **Kontrollid ja mõõtmismallid (`36097a9`).** Lisati tööde keeldumise, aegumise, autentimise, kohaloleku ja katkestusest taastumise serveritestid ning seadmekatsete juhend. 
+- **Serveri püsiv käivitamine (`b47ae12`).** Lisati `robot-postoffice.service` ja paigaldusjuhend. Gunicorn kuulab `127.0.0.1:5000`; systemd haldab protsessi ja võimaldab selle käivitada sõltumata SSH seansist. 
+- **API ja sisendikontroll (`88e4d1b`).** `Docs/server_api.md` kirjutati vastavusse praeguse serveriga: brauseri, serveri, Atomi, jaama ja roboti rollid; päringud, vastused, võtmed, ID-d, järjekord, tulemused ja piirangud. Tähetöö veebiväli muudeti A–Z valikuks ning server kontrollib enne suurtäheks teisendamist algset ASCII tähte. Varasemas tänases sissekandes on kirjas 12 läbinud serveritesti; siin ei lisata uut katsesooritust.
+- **ÜldResult (`cd4b5b8`, `88e4d1b`).** [Ühiskatse kirjeldus](../../ÜldResult/Lab1&2/Kirjeldus.md) ja kolm MOV-faili koondavad veebilehe, serveri, Atomi ning roboti demonstratsiooni. 
+
+
+### Lubatud tööde ja tähe sisendi kontroll
+
+- Tähe vabatekstiväli asendati A–Z valikuga ja brauserisse lisati saatmiseelne kontroll.
+- Server kontrollib algset sisendit mustriga `[A-Za-z]` enne suurtäheks teisendamist. Nii ei pääse Unicode `ı` ja `ſ` teisendamise kaudu lubatud täheks. Numbrid ja tundmatud tööd annavad HTTP 400 / refused.
+- Lubatud töödeks jäid `letter` ja `show_image`. Pildi ID numbreid ei keelatud.
+- Laiendati teste: sobivad kõik 52 ASCII tähte; vigane sisend ei muuda lubatud ootel tööd ega jõua poll-vastusesse. Kõik 12 serveritesti läbisid.
+- Uuendati API, kontrolli, paigalduse ja tööde salvestuse dokumentatsiooni. 
+
+
+
+## 25.10.2026 — videokatsete filmimine
+
+- Filmiti veebilehe, Flaski serveri, Atomi ja MG400 koostööd tähetöö edastamisel ja joonistamisel. [Tähtede joonistamise video](../../ÜldResult/Lab1&2/1_Tähtede_joonistamine/tahtede_joonistamine.mp4).
+- Filmiti veebiliidese ja Atomi vahelist pildi edastamist ning ekraanil kuvamist. [Pildi edastamise video 1](../../ÜldResult/Lab1&2/2_Pildi_edastamine_ja_kuvamine/pildi_edastamine_1.mp4). [Pildi edastamise video 2](../../ÜldResult/Lab1&2/2_Pildi_edastamine_ja_kuvamine/pildi_edastamine_2.mp4).
+- Filmiti ühenduse katkestamist tähetöö ajal: robot lõpetab joonistamise ning ühenduse taastumisel kuvatakse töö olekuks Done. [Ühenduse katkestamise video](../../ÜldResult/Lab1&2/3_Käitumine_ühenduse_katkestamisel/uhenduse_katkestamine.mp4).
+- Filmiti USB-veebikaamera ja XIAO kaamera pildi kuvamist ühisel jälgimislehel roboti töötamise ajal. [Kaamerate video](../../ÜldResult/Lab1&2/5_Kaamerad/kaamerad.mp4).

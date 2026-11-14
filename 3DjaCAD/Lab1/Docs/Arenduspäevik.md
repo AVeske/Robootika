@@ -23,3 +23,15 @@ Katsetame ja täiendame patakahoidiku prototüübid.
 
 **02-03.10**
 Katsetame ja täiendame patakahoidiku prototüübid. Katsed selle kirjutamisega. Eesmärk: pastakas peab püsima kindlalt ja mitte olema liiga lõtv hoidikus.
+
+
+Lisatud järgmised mudelid/joonised:
+- `Printer, ja tööriist, mis annab järele CHECK.3mf`;
+- `Printer, ja tööriist, mis annab järele OSA1.3mf`;
+- `Printer, ja tööriist, mis annab järele OSA2.1.3mf`;
+- `Printer, ja tööriist, mis annab järele PROTOTYP.stl`.
+
+
+## 25.10.2026 — videokatsete filmimine
+
+- Filmiti 3D-prinditud vetruva pastakahoidiku tööd tähtede joonistamisel: hoidik liigub vertikaalsuunas ja aitab hoida kirjutusvahendit paberiga kontaktis. [Pastakahoidiku ja joonistamise video](../../../ÜldResult/Lab1&2/1_Tähtede_joonistamine/tahtede_joonistamine.mp4).

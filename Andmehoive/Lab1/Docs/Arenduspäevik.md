@@ -93,3 +93,25 @@ Skeemi kirjeldus:
 ![Rõhuandur ühendatuna maketeerimisplaadi kaudu AtomS3-ga](atom-andur-maketeerimisplaat.jpg)
 
 
+
+
+## 24.10.2026
+
+- **Failide korrastamine (`d4fc432`).** Käsitsi kirjutatud skriptid koondati `src/` alla, vanad `scripts_ai` prototüübid eemaldati ning lisati käivitamisjuhised. 03.10 mõõtelogid paigutati `data/` alla; varasemad 10 Hz logid säilitati võrdluseks. Lisati mõlema labori ülesandetekstid ja täiendati `Dokumentatsioon.md` faili.
+- **100 Hz logimine ja pumbajuhtimine (`b6718f6`).** Atomi mõõtesamm muudeti 10 ms peale. Logisse lisati ADC kood, pinge, atmosfääri suhtes rõhk ja pumba olek. Lisati `suck`, `blow` ja `off` režiimid, kestuse ja käivituste arvu piirid, logifaili nime valik ning olemasoleva faili ülekirjutamise keeld. Pumba riba on 15/30 kPa, minimaalne seisuaeg 1 s, käivituste piir 10 minutis ja andmete puudumise ajapiir 0,5 s. Atmosfääri lähteväärtus on 96,2 kPa absoluutrõhku.
+- **Logija ja ADC kontroll (`b6718f6`, `eff19ce`).** `l1_10s.csv` kirjelduses on 998 mõõterida 9,96 s jooksul ehk ligikaudu 100,2 Hz. ADC näit 0,818 V erines multimeetri 0,833 V näidust 0,015 V ehk 1,8%. Mõõdetud ADC samm oli ligikaudu 0,819 mV ehk 127 Pa.
+- **Müraanalüüs (`b6718f6`, `a51275d`).** Lisati `notebooks/noise_analysis.py`, müra CSV-d ja `Docs/l1_spectrum.png`. Servod väljas mõõtmine korrati toorkanalis. Andmete kokkuvõtte järgi on müra pumba seistes 8,7 LSB ja töötades 12,0 LSB; pumbaga tekivad tipud 19,5 ja 39,1 Hz juures. Servode väljalülitamine müra märgatavalt ei vähendanud; 10 Hz tipu allikas jäi kontrollimata.
+- **Napp õhus (`1a06f85`).** `l1_hold_air.csv`: 60,0 s, 6004 toorkanali rida, üks käivitus, pump töötas ligikaudu 59 s ning rõhk oli umbes −12,8 kPa. Lühitsüklit ei tekkinud, kuid vaakumi mittesaavutamisel töötamise ajalimiiti veel ei ole.
+- **Napp klaasil (`470234e`, sõnaparandus `a93f543`).** `l1_hold_glass.csv`: üks käivitus 60 s jooksul, pumba tööaeg 0,10 s ja leke ligikaudu 0,019 kPa/s. Madalaim rõhk oli −48,6 kPa. README-s toodud umbes 20 minuti hoideaeg on lekkekiirusest arvutatud hinnang, mitte 20-minutiline katse.
+- **Puhumine (`abfd373`).** `l1_blow_glass.csv`: 10 käivitust 17,7 s jooksul, mille järel käivituste piir takistas uusi käivitusi. Seisuaeg oli vähemalt ligikaudu 1 s. Järeldus: klaasi vabastamiseks sobib ühekordne puhumisimpulss, mitte pidev rõhu hoidmine.
+- **USB katkestus (`4de4208`).** `l1_usb_pull.csv` ja katsekirjelduse järgi saadeti ning kinnitati pumba `off` alla 0,1 s pärast viimast mõõterida. See ei kata arvuti kokkujooksmist või protsessi sundlõpetamist; roboti või pumbakasti sõltumatu ajapiir jääb eraldi küsimuseks.
+- **Suletud liin (`b69c506`).** `l1_hold_sealed.csv`: üks käivitus 60 s jooksul, pumba tööaeg 0,10 s ning leke ligikaudu 0,025 kPa/s. `data/README.md` koondab klaasil, õhus ja suletud liiniga katsed ning põhjendab riba ja käivituste piiride valikut.
+- **Ühiskatse materjalid (`cd4b5b8`, `88e4d1b`).** Kausta `ÜldResult/Lab1&2/` lisati Atomi pildiedastuse ja MG400 tähtede joonistamise videod ning tulemuste kirjeldus. Kirjelduse järgi katsetati ka tähe H saatmist otse seadmest. [Ühiskatse kirjeldus](../../../ÜldResult/Lab1&2/Kirjeldus.md).
+
+
+
+
+## 25.10.2026 — videokatsete filmimine
+
+- Filmiti Atomi kasutamist tähe sisendina ja valitud tähe H joonistamist robotiga. [Tähtede joonistamise video](../../../ÜldResult/Lab1&2/1_Tähtede_joonistamine/tahtede_joonistamine.mp4).
+- Filmiti vaakumhaaratsi ja pumbajuhtimise kasutamist eseme haaramisel, teisaldamisel ning vabastamisel. [Esemete teisaldamise video](../../../ÜldResult/Lab1&2/4_Esemete_teisaldamine/esemete_teisaldamine.mp4).

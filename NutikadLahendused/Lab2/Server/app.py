@@ -140,8 +140,9 @@ def create_job():
     if job_type not in ALLOWED_JOBS:
         return jsonify(status="refused", reason="Unknown or forbidden job"), 400
     if job_type == "letter":
-        if (not isinstance(argument, str) or len(argument) != 1
-                or len(argument.upper()) != 1 or not "A" <= argument.upper() <= "Z"):
+        # Check the original input: Unicode uppercasing can turn non-ASCII
+        # characters such as dotless i into an otherwise allowed letter.
+        if not isinstance(argument, str) or re.fullmatch(r"[A-Za-z]", argument) is None:
             return jsonify(status="refused", reason="Letter must be A-Z"), 400
         argument = argument.upper()
     if job_type == "show_image":

@@ -1,3 +1,47 @@
+# Atomi leht — Labori 1 seaded ja testid
+
+## Kontrollitud lahendus
+
+24.10.2026 vaadati üle kohaliku kõrvalrepo `ESP32-Image-Server-Fork/atom-image-server` failid `include/index_html.h`, `src/main.cpp` ja `src/letter_sender.h`. Veebilehe HTML asub `include/`, mitte `src/` kaustas. [Projekti asukoht ja käivitamine](letter_writer.md).
+
+AtomS3R teenindab lehte aadressil `http://192.168.4.1/`, kui telefon on Atomi SoftAP-võrgus. Captive portal suunab telefoni sellele lehele; telefoni teavitus võib nõuda avamist. Võrguga liitumine ei nõua internetti. Kui automaatset akent ei ilmu, saab aadressi käsitsi avada vea uurimiseks.
+
+## Mis lehel praegu olemas on
+
+| Lehe osa / nupp | Mida saab teha | Kuidas tulemus seadmesse jõuab |
+|---|---|---|
+| `Source`: `LOAD IMG`, `LOAD .PNG` | Valida telefonist või arvutist pilt. | Pilt avatakse kõigepealt brauseris; valimine üksi seda Atomile ei saada. |
+| `Slot (edit / send target)` | Valida üks neljast pildipesast, lehel 1–4. | API kasutab pesade numbreid 0–3. |
+| `Device Preview`, `Zoom`, `FIT`, `FILL`, `1:1` | Eelvaadata ja sättida 128 × 128 ekraanile minevat pilti. | Need on brauseri pildiseaded; seadmesse saadetakse tulemus nupuga `SEND → SLOT`. |
+| `SEND → SLOT` | Saata ettevalmistatud pilt valitud pessa ja ekraanile. | `POST /frame?slot=N`, multipart-fail: 32768 baiti RGB565 big-endian andmeid. Pilt salvestatakse LittleFS-i. |
+| `SHOW THIS SLOT ON DEVICE` | Kuvada juba salvestatud pesa pilt. | `GET /show?slot=N`; tühi pesa annab HTTP 404. |
+| `SAVE PNG + DATA`, `EXPORT .DAT` | Salvestada pildi eksport brauserist arvutisse või telefoni. | Need pole Atomi seadete salvestusnupud. |
+| `Button gestures`: short, long, double | Määrata valitud pesa nupužesti tegevuseks pesa 1–4, URL või teise seadme viide. | `SAVE GESTURES` saadab `POST /buttons`; seadistus salvestatakse LittleFS-i. `GET /buttons` loeb selle tagasi. |
+| `Lab settings`: `TEST DISPLAY` | Kuvada Atomi ekraanil seadme võrgu-/IP olek. | `GET /test-display` kutsub `showStatus()` ja tagastab HTTP 200 tekstiga `Status shown on display`. |
+| `Network` | Näha seadme nime ja leitud teisi seadmeid; lisada teise seadme viide žestiväljale. | `GET /state` ja `GET /peers`. |
+
+### Nupužestide seos tähevalikuga
+
+Žestide seadistus kuulub algsele pildiserverile. Labori tähevaliku loogika kasutab lühikest vajutust tähe valimiseks ja pikka vajutust saatmiseks; seetõttu ei saa lubada, et iga žestiväli muudab samal ajal ka tähevaliku käitumist. Füüsilise nupu tegelik tegevus tuleb valitud režiimis eraldi kontrollida.
+
+Tähejaama käivitamine on kirjas [letter_writer.md](letter_writer.md).
+
+## Kuidas olemasolevat lehte laboris kontrollida
+
+| Katse | Sammud | Oodatav tulemus | Selle ülevaatuse seis |
+|---|---|---|---|
+| Captive portal | Ühenda telefon Atomi võrku; ava vajadusel võrgu sisselogimise teavitus. | Avaneb sama Atomi leht ilma aadressi trükkimata. | Varasem test kirjeldatud allpool; uut seadmekatset ei tehtud. |
+| Ekraani test | Vajuta `TEST DISPLAY`. | Lehel on päringu tagasiside; ekraanil võrgu-/IP olek. | Koodis olemas; uus seadmekatse tegemata. |
+| Pildi saatmine | Laadi pilt, vali pesa, säti eelvaade ja vajuta `SEND → SLOT`. | Pilt jõuab ekraanile ja valitud pessa. | Uus seadmekatse tegemata. |
+| Pesa vahetamine | Saada kahele pesale erinevad pildid ja kasuta `SHOW THIS SLOT ON DEVICE`. | Ekraanil on valitud pesa pilt. | Uus seadmekatse tegemata. |
+| Žestide salvestus | Salvesta žest, värskenda lehte ja kontrolli väärtust uuesti; testi sobivas režiimis nuppu. | Salvestus säilib ja tegelik nupukäitumine vastab režiimile. | Uus seadmekatse tegemata. |
+
+Katse juurde lisa kuupäev, kasutatud püsivara commit, telefoni mudel, tulemus ning foto/video või logi asukoht. Püsivara koodikontrolli ei märgita riistvarakatseks. Ükski kirjeldus selles failis ei kinnita uute seadete lisamist või püsivara üleslaadimist.
+
+## Varasem arenduskirjeldus
+
+Allpool on säilitatud senised sissekanded. Need kirjeldavad arendusetappe, mitte kõiki praeguse versiooni funktsioone. Jaama tähtede joonistamise failide kirjeldus kuulub jaama, mitte Atomi veebiseadete teostusse.
+
 ### Captive portal ja display test
 
 Lisatud AtomS3R SoftAP režiimile captive portal, et WiFi võrku ühendudes saaks telefon avada olemasoleva veebiliidese ilma, et kasutaja peaks käsitsi sisestama `192.168.4.1`.
